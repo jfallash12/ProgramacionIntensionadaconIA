@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TravelAssistantState",
+  "description": "Modelo de datos del estado completo de la aplicación Viajero. Todo este objeto se persiste en LocalStorage y se restaura al iniciar la aplicación.",
+  "$comment": "Campos derivados (totalDays, foodDailyLimit) NO se persisten: se recalculan en tiempo de ejecución a partir de trip.startDate, trip.endDate y budgets.",
+  "type": "object",
+  "required": ["trip", "budgets", "expenses", "itinerary"],
+  "$defs": {
+    "categoria": {
+      "type": "string",
+      "enum": ["comida", "hospedaje", "transporte", "actividades", "compras", "imprevistos"]
+    },
+    "fechaISO": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "montoPositivo": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    }
+  },
+  "properties": {
+    "trip": {
+      "type": "object",
+      "required": ["id", "name", "destination", "startDate", "endDate"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string", "minLength": 1 },
+        "destination": { "type": "string", "minLength": 1 },
+        "startDate": { "$ref": "#/$defs/fechaISO" },
+        "endDate": { "$ref": "#/$defs/fechaISO" }
+      }
+    },
+    "budgets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["category", "allocated"],
+        "properties": {
+          "category": { "$ref": "#/$defs/categoria" },
+          "allocated": { "$ref": "#/$defs/montoPositivo" }
+        }
+      }
+    },
+    "expenses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "category", "amount", "description", "date", "paymentMethod", "createdAt"],
+        "properties": {
+          "id": { "type": "string" },
+          "category": { "$ref": "#/$defs/categoria" },
+          "amount": { "$ref": "#/$defs/montoPositivo" },
+          "description": { "type": "string", "minLength": 1 },
+          "date": { "$ref": "#/$defs/fechaISO" },
+          "time": { "type": "string", "pattern": "^\\d{2}:\\d{2}$" },
+          "mealType": {
+            "type": "string",
+            "enum": ["desayuno", "almuerzo", "cena", "snack_cafe", "bebidas_bar"]
+          },
+          "paymentMethod": {
+            "type": "string",
+            "enum": ["tarjeta", "efectivo", "transferencia"]
+          },
+          "location": { "type": "string" },
+          "notes": { "type": "string" },
+          "createdAt": { "type": "number" }
+        },
+        "allOf": [
+          {
+            "if": {
+              "required": ["category"],
+              "properties": { "category": { "const": "comida" } }
+            },
+            "then": { "required": ["mealType"] }
+          }
+        ]
+      }
+    },
+    "itinerary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "dayNumber", "date", "time", "title", "location", "category", "status"],
+        "properties": {
+          "id": { "type": "string" },
+          "dayNumber": { "type": "integer", "minimum": 1 },
+          "date": { "$ref": "#/$defs/fechaISO" },
+          "time": { "type": "string", "pattern": "^\\d{2}:\\d{2}$" },
+          "title": { "type": "string", "minLength": 1 },
+          "location": { "type": "string" },
+          "category": { "$ref": "#/$defs/categoria" },
+          "notes": { "type": "string" },
+          "estimatedCost": { "type": "number", "minimum": 0 },
+          "status": {
+            "type": "string",
+            "enum": ["pendiente", "en_progreso", "completado"]
+          }
+        }
+      }
+    }
+  }
+}
