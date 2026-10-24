@@ -51,8 +51,6 @@ La retroalimentación sobre la primera versión evidenció una lección clave: u
 
 ## 3. Reflexión S3L1 — Diseño Técnico e Inyección de Memoria Semántica
 
-> ✏️ **BORRADOR para editar:** ajuste cada respuesta con su experiencia real (herramienta usada, qué propuso la IA y qué cambió usted) antes de entregar.
-
 **1. Paso de Requerimientos a Diseño — ¿Qué decisiones técnicas tuvo que tomar la IA que no estaban escritas en `requirements.md`?**
 
 Los requerimientos dicen *qué* debe pasar, pero no *cómo*. Al pasar a diseño aparecieron decisiones que ningún REQ resolvía (documentadas en `design.md` §6):
