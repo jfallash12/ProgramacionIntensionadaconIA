@@ -1,0 +1,217 @@
+/* Viajero — CSS puro escrito a mano (sin frameworks ni CDN). design.md §8 */
+
+:root {
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --text: #1f2933;
+  --muted: #61707d;
+  --border: #d9e0e6;
+  --primary: #1c64c4;
+  --primary-soft: #e7f0fc;
+  --ok: #2f8a3e;
+  --ok-soft: #e3f5e6;
+  --warning: #b86e00;
+  --warning-soft: #fff3dc;
+  --exceeded: #c62828;
+  --exceeded-soft: #fde8e8;
+  --fixed: #5f3dc4;
+  --fixed-soft: #efeaff;
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(16, 24, 40, 0.08);
+  font-size: 16px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.45;
+}
+
+body.has-dialog { overflow: hidden; }
+
+h1, h2, h3, h4 { margin: 0 0 0.5rem; line-height: 1.2; }
+h1 { font-size: 1.5rem; }
+h2 { font-size: 1.35rem; }
+h3 { font-size: 1.15rem; }
+h4 { font-size: 1rem; }
+p { margin: 0.25rem 0 0.75rem; }
+
+.layout { max-width: 1180px; margin: 0 auto; padding: 1rem; }
+
+.app-header { display: flex; align-items: baseline; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.app-header h1 { color: var(--primary); margin: 0; }
+
+.muted { color: var(--muted); }
+.empty { color: var(--muted); font-style: italic; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.empty-trip { max-width: 640px; margin: 2rem auto; }
+
+/* ----- Encabezado del viaje y pestañas ----- */
+.trip-header {
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
+  background: var(--fixed-soft); border: 1px solid #cfc3f5; border-radius: var(--radius);
+  padding: 0.75rem 1.25rem; margin-bottom: 0.75rem;
+}
+.trip-header p { margin: 0; }
+
+.tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.tab {
+  border: 1px solid var(--border); background: var(--surface); color: var(--text);
+  padding: 0.5rem 1rem; border-radius: 999px; cursor: pointer; font: inherit;
+}
+.tab[aria-selected="true"] { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+/* ----- Botones ----- */
+.btn {
+  font: inherit; cursor: pointer; border: 1px solid var(--border); background: var(--surface);
+  color: var(--text); border-radius: 8px; padding: 0.45rem 0.9rem;
+}
+.btn:hover:not(:disabled) { border-color: var(--primary); }
+.btn:focus-visible, .tab:focus-visible, .day:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible {
+  outline: 3px solid rgba(28, 100, 196, 0.35); outline-offset: 2px;
+}
+.btn.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+.btn.danger { color: var(--exceeded); border-color: #f0b4b4; }
+.btn.danger.solid { background: var(--exceeded); color: #fff; border-color: var(--exceeded); }
+.btn.ghost { background: transparent; }
+.btn.small { padding: 0.25rem 0.6rem; font-size: 0.875rem; }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn.quick { background: var(--primary-soft); border-color: #c4d8f5; }
+
+.row-actions { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
+.section-head { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+
+/* ----- Avisos ----- */
+.notice {
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  padding: 0.6rem 1rem; border-radius: var(--radius); margin-bottom: 1rem; border: 1px solid;
+}
+.notice.is-ok { background: var(--ok-soft); border-color: #b5dfbd; }
+.notice.is-warning { background: var(--warning-soft); border-color: #f2cf8f; }
+.notice.is-error { background: var(--exceeded-soft); border-color: #f0b4b4; }
+
+.alert { padding: 0.5rem 0.75rem; border-radius: 8px; font-weight: 600; }
+.alert.is-exceeded { background: var(--exceeded-soft); color: var(--exceeded); }
+.alert.is-warning { background: var(--warning-soft); color: var(--warning); }
+
+/* ----- Estados (el color siempre va acompañado de texto) ----- */
+.is-ok { --state: var(--ok); --state-soft: var(--ok-soft); }
+.is-warning { --state: var(--warning); --state-soft: var(--warning-soft); }
+.is-exceeded { --state: var(--exceeded); --state-soft: var(--exceeded-soft); }
+
+.bar { height: 12px; background: #e9edf1; border-radius: 999px; overflow: hidden; flex: 1; min-width: 80px; }
+.bar-fill { height: 100%; background: var(--state, var(--primary)); border-radius: 999px; }
+.bar-row { display: flex; align-items: center; gap: 0.75rem; margin: 0.5rem 0; }
+.global-bar { display: grid; gap: 0.35rem; margin-top: 0.75rem; }
+
+.dot { display: inline-block; width: 0.75rem; height: 0.75rem; border-radius: 50%; background: var(--state); vertical-align: middle; }
+.legend { color: var(--muted); font-size: 0.9rem; }
+
+/* ----- Dashboard ----- */
+.cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.75rem; margin-bottom: 1rem; }
+.cat-card { border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.75rem; display: grid; gap: 0.3rem; }
+.cat-name { font-weight: 600; display: flex; gap: 0.4rem; align-items: center; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; }
+.stat { border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 0.75rem; background: var(--surface); display: grid; }
+.stat.is-ok, .stat.is-warning, .stat.is-exceeded { border-color: var(--state); background: var(--state-soft); }
+.stat-label { font-size: 0.8rem; color: var(--muted); }
+.stat strong { font-size: 1.1rem; }
+
+.badge {
+  display: inline-block; font-size: 0.75rem; padding: 0.05rem 0.5rem; border-radius: 999px;
+  background: var(--primary-soft); color: var(--primary); margin-left: 0.35rem; font-weight: 600;
+}
+.badge.ok { background: var(--ok-soft); color: var(--ok); }
+.badge.warn { background: var(--warning-soft); color: var(--warning); }
+.badge.fixed { background: var(--fixed-soft); color: var(--fixed); }
+
+/* ----- Control diario ----- */
+.day-selector { display: flex; gap: 0.4rem; flex-wrap: wrap; margin: 0.5rem 0 1rem; }
+.day {
+  font: inherit; min-width: 2.5rem; padding: 0.35rem 0.7rem; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--surface); cursor: pointer;
+}
+.day.is-selected { background: var(--primary-soft); border-color: var(--primary); font-weight: 700; }
+
+.day-card { border: 2px solid var(--state, var(--border)); background: var(--state-soft, var(--surface)); border-radius: var(--radius); padding: 0.75rem 1rem; }
+.day-card h4 { color: var(--state, var(--text)); }
+.day-card.is-none { border-style: dashed; }
+.status-text { font-weight: 700; color: var(--state); margin: 0; }
+
+.quick-meals { margin: 1rem 0; }
+.quick-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+.expense-form { border-top: 1px solid var(--border); padding-top: 1rem; margin-top: 0.5rem; }
+
+/* ----- Formularios ----- */
+.form { display: grid; gap: 0.5rem; }
+.field { display: grid; gap: 0.25rem; align-content: start; }
+.field label { font-weight: 600; font-size: 0.9rem; }
+.field input:not([type="checkbox"]), .field select, .small-select {
+  font: inherit; padding: 0.45rem 0.6rem; border: 1px solid var(--border); border-radius: 8px; background: #fff; width: 100%;
+}
+.small-select { width: auto; padding: 0.25rem 0.4rem; font-size: 0.875rem; }
+.field.has-error input, .field.has-error select { border-color: var(--exceeded); background: var(--exceeded-soft); }
+.field-error { color: var(--exceeded); font-size: 0.85rem; min-height: 1.1em; }
+.form-error { color: var(--exceeded); font-weight: 600; margin: 0; }
+.hint { color: var(--muted); }
+.check { display: flex; align-items: center; gap: 0.4rem; font-weight: 400 !important; }
+.form-actions { display: flex; justify-content: flex-end; gap: 0.5rem; flex-wrap: wrap; }
+
+.grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; }
+.cards { margin-bottom: 0.5rem; }
+
+/* ----- Itinerario e historial ----- */
+.activity-list, .expense-list, .cat-list, .affected { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.5rem; }
+.affected { list-style: disc; padding-left: 1.25rem; }
+.activity {
+  border: 1px solid var(--border); border-left: 4px solid var(--muted); border-radius: 8px;
+  padding: 0.5rem 0.75rem; display: grid; gap: 0.4rem;
+}
+.activity.is-completado { border-left-color: var(--ok); }
+.activity.is-en_progreso { border-left-color: var(--warning); }
+.activity-main { display: grid; gap: 0.15rem; }
+.itin-day { margin-top: 1rem; }
+
+.history { display: grid; gap: 0.5rem; }
+.day-group { border: 1px solid var(--border); border-radius: 8px; padding: 0.4rem 0.75rem; }
+.day-group summary { cursor: pointer; font-weight: 600; padding: 0.25rem 0; }
+.day-group.is-fixed { border-color: #cfc3f5; background: var(--fixed-soft); }
+.expense-list { margin: 0.5rem 0; }
+.expense-row, .cat-row {
+  display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+  border-top: 1px dashed var(--border); padding-top: 0.4rem;
+}
+.amount { min-width: 5.5rem; text-align: right; }
+
+/* ----- Diálogos ----- */
+.backdrop {
+  position: fixed; inset: 0; background: rgba(15, 23, 42, 0.45);
+  display: flex; align-items: flex-start; justify-content: center; padding: 4vh 1rem; overflow-y: auto; z-index: 10;
+}
+.dialog {
+  background: var(--surface); border-radius: var(--radius); padding: 1.25rem; width: min(720px, 100%);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.25);
+}
+
+/* ----- Responsive ----- */
+@media (max-width: 720px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .layout { padding: 0.5rem; }
+  .card { padding: 0.75rem; }
+}
