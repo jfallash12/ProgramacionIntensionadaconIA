@@ -4,10 +4,6 @@
 **Estudiante:** José Fallas — jfallash@ucenfotec.ac.cr
 **Curso:** Programación Intencional con IA Generativa
 
-> ✏️ **Borrador para revisar:** este análisis se redactó a partir del historial real del proyecto
-> (`retrospective.md`, `tasks.md`, commits). Antes de entregar, confirme o cambie los niveles de
-> satisfacción y agregue su propia voz en las respuestas, sobre todo en la pregunta 3.
-
 ---
 
 ## A. Matriz de Alineación de Intención (Visión vs. Realidad)
@@ -54,9 +50,8 @@ La lección es que la ambigüedad estaba en las **relaciones entre artefactos** 
 
 ### 3. Rol de Head Chef — ¿Te sientes 100 % dueño y responsable del código fuente generado o existen componentes que consideras "caja negra"?
 
-✏️ *Ajuste esta respuesta con su experiencia.*
 
-Me siento dueño de la **arquitectura y del comportamiento**. Cada regla se puede rastrear de REQ a componente y función (`design.md` §7) y de función a tarea y commit (`tasks.md`), y puedo explicar el flujo `dispatch` → validar → confirmar → reducer → validar contrato → guardar → render. Las partes que más domino son `calculations.js` y `validations.js`, porque son funciones puras con resultados verificables (por ejemplo, `dailyAvailable` da $25.50 con el dataset).
+Me siento dueño de la **arquitectura y del comportamiento**. Cada regla se puede rastrear de REQ a componente y función (`design.md` §7) y de función a tarea y commit (`tasks.md`), y puedo explicar el flujo `dispatch` → validar → confirmar → reducer → validar contrato → guardar → render. La parte que más domino es `validations.js`, porque son funciones puras con resultados verificables.
 
 Las partes más cercanas a una "caja negra" son:
 
