@@ -16,8 +16,12 @@ Proyecto del curso **Programación Intencional con IA Generativa** — José Fal
 │   ├── wireframe.excalidraw # Wireframe editable (abrir en excalidraw.com)
 │   ├── wireframe.png        # Wireframe exportado (visible en GitHub)
 │   └── design.md            # ENTREGABLE PRINCIPAL: diseño y arquitectura (RN-01..RN-07)
-├── tasks.md                 # Plan de implementación por fases, validado con IA (S3L2)
-├── src/                     # Código fuente de la aplicación (en construcción según tasks.md)
+├── tasks.md                 # Plan de implementación por fases, ejecutado y verificado (T-00..T-32)
+├── src/                     # Código fuente de la aplicación
+│   ├── index.html           # Punto de entrada (abrir con doble clic)
+│   ├── css/styles.css       # CSS puro
+│   └── js/                  # calculations, validations, storage, ui, app (scripts clásicos)
+├── REFLECTION.md            # Autoevaluación de alineación del Proyecto Final
 ├── retrospective.md         # Historial de correcciones y reflexiones (S2L2, S3L1, S3L2)
 └── README.md                # Este archivo
 ```
@@ -32,16 +36,46 @@ Proyecto del curso **Programación Intencional con IA Generativa** — José Fal
 | 4 | [`CLAUDE.md`](CLAUDE.md) | S3L1 | Memoria semántica para la IA |
 | 5 | [`docs/design.md`](docs/design.md) | S3L1 | Cómo se construye: componentes, módulos, estado, diagramas y mapeo REQ → función |
 | 6 | [`tasks.md`](tasks.md) | S3L2 | Plan paso a paso: fases, criterios de aceptación, pruebas de regresión y matriz REQ → tarea |
-| 7 | [`retrospective.md`](retrospective.md) | todos | Correcciones y reflexiones |
+| 7 | [`src/`](src/) | Proyecto final | La aplicación |
+| 8 | [`REFLECTION.md`](REFLECTION.md) | Proyecto final | Autoevaluación: Visión vs. Realidad |
+| 9 | [`retrospective.md`](retrospective.md) | todos | Correcciones y reflexiones |
 
 ## Cómo ejecutarla
 
-Sin dependencias, sin build, sin servidor *(la implementación se hace tarea por tarea siguiendo [`tasks.md`](tasks.md))*:
+Sin dependencias, sin build, sin servidor y sin internet:
 
-1. Clonar el repositorio.
-2. Abrir `src/index.html` con doble clic en cualquier navegador moderno.
+1. Clonar o descargar el repositorio.
+2. Abrir `src/index.html` con doble clic en Chrome, Edge o Firefox.
 
-Publicación en línea: GitHub Pages (ver `docs/design.md` §10).
+Los datos se guardan en el `localStorage` del navegador (clave `viajero.state`).
+
+**Cargar datos de prueba (opcional):** abra la consola del navegador (F12), pegue la línea siguiente sustituyendo `<ejemplo>` por `examples[1]` de [`docs/data-contract.json`](docs/data-contract.json), y recargue con F5:
+
+```js
+localStorage.setItem('viajero.state', JSON.stringify(<ejemplo>));
+```
+
+Para empezar de cero: `localStorage.removeItem('viajero.state')` y F5.
+
+## Demostración (auditoría del cliente)
+
+Con los datos de prueba, seleccione el **Día 2** en el Control Diario:
+
+1. **Persistencia:** registre un gasto y presione **F5** → los datos y los totales siguen ahí.
+2. **Restricción semántica:** escriba **−5** en Monto → error en rojo al instante, Guardar deshabilitado, nada se guarda.
+3. **Lógica dinámica:** en Comida (límite $70.00, acumulado $44.50) registre $10.00, luego $5.00 y luego $20.00 → disponible +$15.50 (78 % Verde), +$10.50 (85 % Ámbar), −$9.50 (114 % Rojo); el gasto se registra aunque exceda el límite.
+
+## Cumplimiento del Proyecto Final
+
+| Requisito | Dónde se cumple |
+|---|---|
+| 2 o más entidades relacionadas | `Trip`, `Category`, `Expense` (→ `categoryId`) e `ItineraryItem` (↔ `Expense` con `convertedExpenseId` / `linkedActivityId`) — [`docs/data-contract.json`](docs/data-contract.json) |
+| Persistencia real | `localStorage` en cada cambio, restauración al iniciar y manejo de datos dañados — `src/js/storage.js` (REQ-039..041, REQ-064) |
+| 3 o más reglas de negocio complejas en EARS | 63 REQ en [`docs/requirements.md`](docs/requirements.md); por ejemplo REQ-020 (Disponible Hoy), REQ-016 (reasignar al eliminar categoría), REQ-043 (convertir actividad completada) |
+| Archivo de reglas de contexto | [`CLAUDE.md`](CLAUDE.md) §10: restringe el stack, fija convenciones y prohíbe parches fuera de la especificación |
+| Casos de borde con retroalimentación visual | Vacíos, negativos, no numéricos, más de 2 decimales, duplicados, fechas fuera de rango, segundo viaje, doble conversión — errores en vivo y avisos |
+| Unchanged Behavior | Protocolo en [`tasks.md`](tasks.md) y pruebas de regresión R1–R5 |
+| Autoevaluación | [`REFLECTION.md`](REFLECTION.md) |
 
 ## Stack
 

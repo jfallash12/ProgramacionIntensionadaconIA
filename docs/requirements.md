@@ -43,7 +43,7 @@
 
 * **REQ-062**: the system SHALL mantener como máximo **un (1) viaje**. WHEN el usuario intenta crear un viaje, IF ya existe un viaje, THEN the system SHALL rechazar la creación e indicar que primero debe eliminar el viaje actual (REQ-063).
 
-* **REQ-063**: WHEN el usuario solicita eliminar el viaje actual, THEN the system SHALL mostrar cuántos gastos y actividades se eliminarán, SHALL requerir confirmación explícita y, solo tras confirmar, SHALL eliminar el viaje con sus gastos y actividades, conservando las categorías del sistema.
+* **REQ-063**: WHEN el usuario solicita eliminar el viaje actual, THEN the system SHALL mostrar cuántos gastos y actividades se eliminarán, SHALL requerir confirmación explícita y, solo tras confirmar, SHALL eliminar el viaje con sus gastos y actividades, conservando todas las categorías (las del sistema y las creadas por el usuario, con sus montos asignados).
 
 ---
 

@@ -42,6 +42,9 @@
 | 27 | `design.md` v3: componentes, módulos, estado, 6 diagramas Mermaid y mapeo de los 63 REQ | Requisitos de la guía S3L1 |
 | 28 | `tasks.md`: plan por fases con criterios de aceptación, dataset oficial, pruebas de regresión y matriz REQ → tarea | Requisitos de la guía S3L2 |
 | 29 | `CLAUDE.md`: invariantes del negocio del S3L2 y protocolo de trabajo con `tasks.md` + Unchanged Behavior | Requisitos de la guía S3L2 (Paso 2) |
+| 30 | Implementación completa en `src/` (T-01..T-30), verificada con 126 pruebas automatizadas y las 3 pruebas del cliente | Proyecto Final |
+| 31 | Corrección del borrador de actividad desactualizado tras acortar el viaje y regla D14 de visibilidad de errores | Hallazgo durante la verificación, corregido con Unchanged Behavior |
+| 32 | REQ-063 aclarado (se conservan todas las categorías) y `CLAUDE.md` §10 con las reglas de gobierno de la IA | Proyecto Final: archivo de reglas que restringe el stack y prohíbe parches fuera de la especificación |
 
 ## 2. Reflexión sobre la Especificación Intencional
 
@@ -75,7 +78,7 @@ Sí. Se descartaron React y Redux (un solo usuario y un solo viaje no justifican
 
 ## 4. Reflexión S3L2 — Re-ingeniería Intencional (Spec-Driven Coding)
 
-> Respuestas escritas al terminar la auditoría de artefactos y el plan [`tasks.md`](tasks.md), antes de programar. Al cerrar la implementación (tarea T-32) se completan con lo observado al generar el código.
+> Respuestas escritas al terminar la auditoría y el plan [`tasks.md`](tasks.md), y completadas al cerrar la implementación (T-32). La autoevaluación del Proyecto Final está en [`REFLECTION.md`](REFLECTION.md).
 
 **1. Arquitectura Orientada a IA — ¿Cómo facilitó la organización de los archivos de contexto (CLAUDE.md, tasks.md, requirements.md) el trabajo del agente de IA al momento de generar, corregir o refactorizar el código?**
 
@@ -112,6 +115,8 @@ La mayoría de los problemas eran desalineaciones entre artefactos, no errores d
 **3. Mantenibilidad y Unchanged Behavior — ¿Qué diferencia notaste al solicitar correcciones bajo la regla de Unchanged Behavior frente a las modificaciones a ciegas realizadas en el primer laboratorio?**
 
 En el primer laboratorio los cambios se pedían "a ciegas": se describía el síntoma y la IA reescribía bloques completos. A veces arreglaba lo pedido y rompía algo que ya funcionaba, y había que descubrirlo probando todo de nuevo. Con Unchanged Behavior cada corrección declara explícitamente qué **no** puede cambiar: los cálculos de `calculations.js`, las validaciones, la persistencia y las tareas ya cerradas. También limita los archivos que se pueden tocar. `tasks.md` trae la plantilla de ese prompt y cinco pruebas de regresión (R1–R5), así que después de cada ajuste se comprueba en minutos que la persistencia, el rechazo de negativos y el cálculo diario siguen dando los mismos valores ($70.00 / $44.50 / 64 %). La diferencia principal es pasar de "confiar y luego revisar todo" a "acotar el cambio y verificar lo crítico". Los diffs son más pequeños y fáciles de auditar.
+
+*Durante la implementación:* al acortar las fechas del viaje, el formulario de actividad quedaba con una fecha fuera de rango y Guardar deshabilitado sin explicación. La corrección se pidió bajo Unchanged Behavior, sin tocar `calculations.js` ni `validations.js`. El cambio quedó en dos lugares (`UPDATE_TRIP.after` y la regla de visibilidad de errores), y las 126 verificaciones volvieron a pasar sin cambios en los valores de negocio.
 
 **4. Evaluación de Satisfacción — Guion de la presentación de 1 minuto al profesor**
 

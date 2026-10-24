@@ -4,6 +4,8 @@
 > el contrato de datos ([`data-contract.json`](./data-contract.json)) y el wireframe
 > ([`wireframe.md`](./wireframe.md) · [`wireframe.png`](./wireframe.png)) en componentes, módulos, manejo de estado y flujos de datos.
 > La memoria semántica que guía los nombres está en [`../CLAUDE.md`](../CLAUDE.md). Es el insumo directo de la implementación (Semana 4).
+>
+> **Estado:** implementado en [`../src/`](../src/) siguiendo [`../tasks.md`](../tasks.md) (T-01..T-32 completadas).
 
 **Curso:** Programación Intencional con IA Generativa
 **Estudiante:** José Fallas — jfallash@ucenfotec.ac.cr
@@ -177,16 +179,16 @@ Regla de dependencias: `calculations.js` no depende de nada, y solo `app.js` toc
 ### 5.3. API de cada módulo
 
 **`calculations.js` (puro, sin DOM):**
-`parseISODate(s)`, `toISODate(d)`, `todayISO()`, `isValidISODate(s)`, `tripDates(trip)`, `totalDays(trip)`, `dailyLimit(state, catId)`, `dayAccumulated(state, catId, date)`, `dailyAvailable(state, catId, date)`, `dailyStatus(state, catId, date)`, `mealTotals(state, date)`, `categorySpent(state, catId)`, `globalBudget(state)`, `dayTotal(state, date)`, `groupExpensesByDate(state)`, `itemsOutOfRange(state, newStart, newEnd)`, `canConvert(activity)`, `initialSelectedDate(trip, todayISO)`, `hasMax2Decimals(n)`, `roundMoney(n)`, `formatMoney(n)`, `formatPercent(p)`.
+`parseISODate(s)`, `toISODate(d)`, `todayISO()`, `isValidISODate(s)`, `addDays(iso, n)`, `tripDates(trip)`, `totalDays(trip)`, `isInTrip(trip, iso)`, `dayNumber(trip, iso)`, `getCategory(state, catId)`, `dailyLimit(state, catId)`, `dayAccumulated(state, catId, date)`, `dailyAvailable(state, catId, date)`, `dailyPercent(state, catId, date)`, `statusFromPercent(p)`, `dailyStatus(state, catId, date)`, `mealTotals(state, date)`, `categorySpent(state, catId)`, `categoryFixed(state, catId)`, `globalBudget(state)`, `dayTotal(state, date)`, `groupExpensesByDate(state)`, `itemsOutOfRange(state, newStart, newEnd)`, `canConvert(activity)`, `initialSelectedDate(trip, todayISO)`, `toCents(n)`, `sumAmounts(list)`, `hasMax2Decimals(n)`, `roundMoney(n)`, `formatMoney(n, {sign})`, `formatPercent(p)`.
 
 **`validations.js` (puro; devuelve `{ campo: 'mensaje' }`, vacío = válido):**
-`validateTrip(draft, state)`, `validateCategory(draft, state)`, `validateCategoryDelete(catId)`, `validateExpense(draft, state)`, `validateActivity(draft, state, original)`, `validateConversion(activity)`.
+`parseAmount(raw, {label, allowZero})`, `validateTrip(draft)`, `validateCategory(draft, state, originalId)`, `validateCategoryDelete(catId, state)`, `validateExpense(draft, state)`, `validateActivity(draft, state, original)`, `validateConversion(activity)`, `isBlank(v)`, `hasErrors(errors)`.
 
 **`storage.js`:**
 `STORAGE_KEY = 'viajero.state'`, `emptyState()`, `validateState(obj)` (réplica manual del contrato), `loadState()` → `{ state, notice }`, `saveState(state)` → `true | error`.
 
 **`app.js`:**
-`state`, `ui`, `dispatch(action)`, `reducers` (uno por acción de dominio), `bindEvents(root)`, `init()`.
+`state`, `ui`, `dispatch(action)`, tabla `DOMAIN` (por acción: `validate`, `confirm`, `reduce`, `after`), tabla `UI_ACTIONS`, `validateForm(name, draft, id)`, `bindEvents()`, `init()`. Expone `Viajero.app.state` (solo lectura) para verificar desde la consola.
 
 ### 5.4. Ciclo `dispatch` (el único camino para mutar)
 
@@ -291,6 +293,10 @@ stateDiagram-v2
 | D10 | El Monto acepta como máximo 2 decimales | No había REQ: se agregó **REQ-065** |
 | D11 | `ui.selectedDate` no se persiste; se recalcula al abrir | REQ-054 lo define al abrir |
 | D12 | Re-render completo de la vista activa tras cada `dispatch` (sin DOM virtual) | Basta para decenas o cientos de gastos; es simple de depurar |
+| D13 | Antes de aceptar un cambio, `dispatch` valida el estado resultante con `storage.validateState`; si no cumple el contrato, no se aplica | Red de seguridad: nunca se guarda un estado inválido (R5) |
+| D14 | Los errores en vivo se muestran cuando el campo fue tocado o trae un valor precargado inválido; Guardar se deshabilita mientras exista cualquier error | Evita mensajes en formularios vacíos sin ocultar errores de datos precargados (hallazgo de la implementación) |
+| D15 | Al eliminar el viaje se conservan todas las categorías | REQ-037: no borrar como efecto secundario; REQ-063 aclarado |
+| D16 | Al teclear, los errores se actualizan en el formulario sin re-render; los selects marcados `data-rerender` (categoría, destino de reasignación) sí re-renderizan | No se pierde el foco ni la posición del cursor |
 
 ## 7. Mapeo explícito de requerimientos → diseño
 

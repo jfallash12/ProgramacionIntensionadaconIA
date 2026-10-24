@@ -1,8 +1,9 @@
 # CLAUDE.md — Memoria Semántica del Proyecto
 
-> Este archivo es la memoria permanente para cualquier IA o desarrollador que trabaje en el
-> proyecto. Contiene las reglas del negocio, el lenguaje ubicuo y los invariantes que
-> **nunca** deben romperse. Antes de escribir código, léelo completo.
+> Este archivo es la memoria permanente y el **archivo de reglas de contexto** del proyecto
+> (cumple la función de `.cursorrules` / `system_prompt.md`) para cualquier IA o desarrollador.
+> Contiene las reglas del negocio, el lenguaje ubicuo, los invariantes que **nunca** deben romperse
+> y las reglas de gobierno de la IA (§10). Antes de escribir o modificar código, léelo completo.
 
 ## 1. ¿Qué es este proyecto?
 
@@ -10,7 +11,7 @@
 controla un presupuesto por categorías personalizables, con **límites diarios de comida y transporte**
 (alertas visuales de sobre-gasto), Total del Día, itinerario del viaje y conversión de actividades a gastos.
 
-- **Curso:** Programación Intencional con IA Generativa — Semana 3, Lab 1.
+- **Curso:** Programación Intencional con IA Generativa — Proyecto Final (Greenfield Intentional App).
 - **Stack:** HTML + CSS puro (escrito a mano, **sin frameworks, librerías ni CDN**) + JavaScript vanilla en scripts clásicos (`window.Viajero`).
 - **Persistencia:** `localStorage` del navegador (clave `viajero.state`). **Sin servidor, sin internet** (REQ-038).
 - **Metodología:** especificación EARS (`WHEN …, IF …, THEN the system SHALL …`) en [`docs/requirements.md`](docs/requirements.md).
@@ -122,8 +123,12 @@ Estos son los `SHALL NOT` del sistema — no los toques sin cambiar primero `doc
 │   ├── wireframe.excalidraw       ← versión editable (excalidraw.com)
 │   ├── wireframe.png              ← exportación visible en GitHub
 │   └── design.md                  ← ENTREGABLE PRINCIPAL: diseño y arquitectura
-├── tasks.md                       ← plan de implementación por fases (S3L2)
-├── src/                           ← código fuente (se construye siguiendo tasks.md)
+├── tasks.md                       ← plan de implementación por fases (T-00..T-32, completado)
+├── src/
+│   ├── index.html                 ← punto de entrada + CSP
+│   ├── css/styles.css             ← CSS puro
+│   └── js/                        ← calculations.js, validations.js, storage.js, ui.js, app.js
+├── REFLECTION.md                  ← autoevaluación del Proyecto Final
 ├── retrospective.md               ← historial de correcciones y reflexión
 └── README.md                      ← resumen y comandos de ejecución
 ```
@@ -140,3 +145,24 @@ Estos son los `SHALL NOT` del sistema — no los toques sin cambiar primero `doc
 
 - **No hay Python ni Node.js** instalados; todo debe funcionar abriendo el HTML directamente en el navegador (file://) — coherente con REQ-038.
 - Git CLI no está en el PATH de PowerShell: usar `"C:\Program Files\Git\cmd\git.exe"`.
+
+## 10. Reglas del proyecto para la IA (gobierno del Sous Chef)
+
+El estudiante es el **Head Chef** (arquitecto y auditor); la IA es el **Sous Chef** (ejecuta). Estas reglas son obligatorias en toda sesión:
+
+**Stack permitido (y nada más):**
+
+- HTML5 + CSS3 escritos a mano + JavaScript vanilla (ES2015+) en scripts clásicos, persistencia en `localStorage`.
+- **Prohibido** agregar: frameworks o librerías (React, Vue, jQuery, Bootstrap, Tailwind…), CDNs, `npm`/`package.json`, herramientas de build, TypeScript compilado, backend, bases de datos externas, IndexedDB, Service Workers, `fetch`/XHR/WebSocket o cualquier acceso a red (REQ-038).
+
+**Convenciones obligatorias:** las de §6. Nombres de funciones y componentes exactamente como en `docs/design.md` §4 y §5.3; campos exactamente como en `docs/data-contract.json`; textos de la interfaz en español.
+
+**Prohibición de parches fuera de la especificación:**
+
+1. No agregar funcionalidades, campos, pantallas ni comportamientos que no estén en `docs/requirements.md`. Si algo falta o es ambiguo, **detenerse y preguntar**; no inventar.
+2. No "arreglar" síntomas con casos especiales (`if` para un dato puntual, `try/catch` que oculta errores, valores mágicos). La corrección debe hacerse en la función responsable según `docs/design.md` §7.
+3. Todo cambio de comportamiento se hace en este orden: `requirements.md` → `data-contract.json` / `design.md` → `tasks.md` → código.
+4. Al corregir o ajustar, aplicar **Unchanged Behavior** (§8): declarar qué no puede cambiar, tocar solo los archivos necesarios y volver a pasar las pruebas R1–R5 de `tasks.md`.
+5. Ningún cambio puede romper los invariantes de §5 ni dejar un estado que no cumpla el contrato (`dispatch` lo verifica con `storage.validateState`).
+6. Entregar siempre el diff y cómo verificarlo; nunca "Accept All" sin revisión del Head Chef.
+

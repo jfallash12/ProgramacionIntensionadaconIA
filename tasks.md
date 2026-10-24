@@ -10,7 +10,7 @@
 > [`docs/wireframe.md`](docs/wireframe.md) + [`docs/wireframe.png`](docs/wireframe.png) ·
 > memoria semántica en [`CLAUDE.md`](CLAUDE.md).
 
-**Estado:** Fase 0 completada · Fases 1–12 pendientes · Leyenda: `[ ]` pendiente · `[x]` hecha (con evidencia)
+**Estado:** ✅ Todas las fases completadas (T-00..T-32) · Leyenda: `[ ]` pendiente · `[x]` hecha (evidencia en §Registro de ejecución)
 
 ---
 
@@ -121,7 +121,7 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
 
 ## Fase 1 — Esqueleto del proyecto
 
-- [ ] **T-01 `index.html`, CSP y carga de scripts**
+- [x] **T-01 `index.html`, CSP y carga de scripts**
   - **Archivos:** `src/index.html`, `src/js/calculations.js`, `src/js/validations.js`, `src/js/storage.js`, `src/js/ui.js`, `src/js/app.js` (estos 5 como stubs vacíos).
   - **Hacer:**
     - Regiones del layout del wireframe (`header`, `nav`, `main`, contenedor de diálogos).
@@ -130,7 +130,7 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
     - Cada script es una IIFE que registra su API en `window.Viajero` (`calc`, `validate`, `storage`, `ui`, `app`).
   - **REQ:** 038 · **Diseño:** §1, §5.1, D1, D6
   - **Aceptación:** al abrir con doble clic (`file://`), `Object.keys(Viajero)` devuelve los 5 módulos; la consola no tiene errores y Network está vacío.
-- [ ] **T-02 `styles.css` base**
+- [x] **T-02 `styles.css` base**
   - **Archivos:** `src/css/styles.css`, `src/index.html` (solo el `<link>`).
   - **Hacer:**
     - Variables `:root` (`--ok`, `--warning`, `--exceeded`, `--fixed`, `--muted`).
@@ -142,7 +142,7 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
 
 ## Fase 2 — `calculations.js` (funciones puras, sin DOM)
 
-- [ ] **T-03 Fechas y días del viaje**
+- [x] **T-03 Fechas y días del viaje**
   - **Archivos:** `src/js/calculations.js`
   - **Hacer:** `parseISODate`, `toISODate`, `todayISO` (fecha **local**), `isValidISODate`, `tripDates`, `totalDays`. Usar `Date.UTC`; nunca `new Date('YYYY-MM-DD')`.
   - **REQ:** 004, 005 · **Diseño:** RN-01, D2, D3
@@ -152,7 +152,7 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
     - `isValidISODate('2026-02-30') === false`
     - `tripDates(trip).length === 8`
     - `todayISO()` coincide con la fecha del reloj de Windows (zona de Costa Rica)
-- [ ] **T-04 Dinero y formato**
+- [x] **T-04 Dinero y formato**
   - **Archivos:** `src/js/calculations.js`
   - **Hacer:** `hasMax2Decimals`, `roundMoney`, `formatMoney`, `formatPercent`; las sumas internas se hacen en centavos enteros.
   - **REQ:** 050, 065 · **Diseño:** D4
@@ -161,7 +161,7 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
     - `formatMoney(25.5) === '$25.50'`
     - sumar `0.1 + 0.2` con el helper da `0.30`
     - `hasMax2Decimals(6.505) === false`
-- [ ] **T-05 Derivados diarios (DailyFoodLimit / DailyTransportLimit)**
+- [x] **T-05 Derivados diarios (DailyFoodLimit / DailyTransportLimit)**
   - **Archivos:** `src/js/calculations.js`
   - **Hacer:** `dailyLimit` (devuelve `null` si no hay asignado), `dayAccumulated` (excluye `isFixed`), `dailyAvailable`, `dailyStatus` (evalúa **sin redondear**), `mealTotals`.
   - **REQ:** 011, 019, 020, 022, 052 · **Diseño:** RN-02, RN-03, RN-04
@@ -169,7 +169,7 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
     - Comida: límite 70, acumulado 44.5, disponible 25.5, estado `ok`.
     - Transporte: límite 47.5, acumulado 12.
     - Al quitar `allocated` a comida, `dailyLimit` devuelve `null`.
-- [ ] **T-06 Derivados globales y utilidades**
+- [x] **T-06 Derivados globales y utilidades**
   - **Archivos:** `src/js/calculations.js`
   - **Hacer:** `categorySpent`, `globalBudget` (`total`, `spent`, `committed`, `available`, `status`: `ok`/`committed`/`exceeded`), `dayTotal`, `groupExpensesByDate` (con el grupo Pre-viaje / Fijos), `itemsOutOfRange`, `canConvert`, `initialSelectedDate`.
   - **REQ:** 006, 009, 012, 014, 046, 047, 051, 053, 054 · **Diseño:** RN-06, RN-07
@@ -181,11 +181,11 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
 
 ## Fase 3 — `validations.js` (funciones puras: `{ campo: 'mensaje' }`, vacío = válido)
 
-- [ ] **T-07 `validateTrip`**
+- [x] **T-07 `validateTrip`**
   - **Archivos:** `src/js/validations.js`
   - **REQ:** 002, 003, 030
   - **Aceptación:** rechaza nombre o destino vacío o de solo espacios, fechas vacías o inválidas (`2026-02-30`) y fin < inicio.
-- [ ] **T-08 `validateExpense`**
+- [x] **T-08 `validateExpense`**
   - **Archivos:** `src/js/validations.js`
   - **REQ:** 025, 026, 027, 028, 029, 047, 055, 065
   - **Aceptación:**
@@ -194,14 +194,14 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
     - Rechaza una fecha variable fuera del rango, pero acepta un **fijo** con fecha 2026-09-15.
     - Editar un gasto variable que quedó fuera del rango se rechaza mientras su fecha siga fuera; al moverlo dentro del viaje, se acepta (T-00.6).
     - **No** consulta límites diarios (REQ-021): un gasto de $500 en comida es válido.
-- [ ] **T-09 `validateCategory` y `validateCategoryDelete`**
+- [x] **T-09 `validateCategory` y `validateCategoryDelete`**
   - **Archivos:** `src/js/validations.js`
   - **REQ:** 018, 023, 048, 065
   - **Aceptación:**
     - Rechaza un nombre vacío y un duplicado sin distinguir mayúsculas (`comida` vs `Comida`).
     - Rechaza un asignado de `0` o `-10`.
     - Rechaza eliminar `cat-comida` y `cat-transporte`.
-- [ ] **T-10 `validateActivity` y `validateConversion`**
+- [x] **T-10 `validateActivity` y `validateConversion`**
   - **Archivos:** `src/js/validations.js`
   - **REQ:** 031, 045, 061, 065
   - **Aceptación:**
@@ -212,7 +212,7 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
 
 ## Fase 4 — `storage.js` (persistencia)
 
-- [ ] **T-11 Persistencia en LocalStorage**
+- [x] **T-11 Persistencia en LocalStorage**
   - **Archivos:** `src/js/storage.js`
   - **Hacer:**
     - `STORAGE_KEY = 'viajero.state'` y `emptyState()` (`trip: null` + `cat-comida` + `cat-transporte`).
@@ -227,7 +227,7 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
 
 ## Fase 5 — `app.js` (estado, `dispatch` y reducers)
 
-- [ ] **T-12 Núcleo: `state`, `ui`, `dispatch`, eventos, `init`**
+- [x] **T-12 Núcleo: `state`, `ui`, `dispatch`, eventos, `init`**
   - **Archivos:** `src/js/app.js`
   - **Hacer:**
     - El ciclo de `design.md` §5.4: guarda `requireTrip`, valida, pide confirmación si corresponde, ejecuta el reducer, `saveState` y `render`.
@@ -239,28 +239,28 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
     - Un `dispatch` con datos inválidos **no** cambia `state` ni `localStorage`.
     - Un `dispatch` válido actualiza ambos.
     - Una acción de dominio sin viaje se rechaza.
-- [ ] **T-13 Reducers de viaje**
+- [x] **T-13 Reducers de viaje**
   - **Archivos:** `src/js/app.js`
   - **Hacer:** `CREATE_TRIP` (rechaza un segundo viaje), `UPDATE_TRIP` (requiere confirmación si hay datos), `DELETE_TRIP` (única cascada permitida).
   - **REQ:** 001, 008, 037, 062, 063
   - **Aceptación:**
     - Un segundo `CREATE_TRIP` se rechaza.
-    - `DELETE_TRIP` confirmado deja `trip: null`, sin gastos ni actividades y con las categorías del sistema.
-- [ ] **T-14 Reducers de categorías**
+    - `DELETE_TRIP` confirmado deja `trip: null`, sin gastos ni actividades, y conserva todas las categorías (REQ-063 aclarado, D15).
+- [x] **T-14 Reducers de categorías**
   - **Archivos:** `src/js/app.js`
   - **Hacer:** `ADD_CATEGORY` (`tracking: total`, `system: false`), `UPDATE_CATEGORY`, `DELETE_CATEGORY(id, targetId)`.
   - **REQ:** 015, 016, 017, 023, 048, 049
   - **Aceptación:**
     - Eliminar `cat-actividades` reasignando a `cat-imprevistos` mueve gastos y actividades sin perder ninguno.
     - Si el destino es comida, se exige `mealType`.
-- [ ] **T-15 Reducers de gastos**
+- [x] **T-15 Reducers de gastos**
   - **Archivos:** `src/js/app.js`
   - **Hacer:** `ADD_EXPENSE` (genera `id` y `createdAt`; elimina `mealType` si no es comida), `UPDATE_EXPENSE`, `DELETE_EXPENSE` (libera la actividad enlazada).
   - **REQ:** 010, 033, 056, 057, 058
   - **Aceptación:**
     - Mover un gasto del Día 2 al Día 3 recalcula ambos días.
     - Borrar un gasto convertido elimina el `convertedExpenseId` de la actividad.
-- [ ] **T-16 Reducers de actividades y conversión**
+- [x] **T-16 Reducers de actividades y conversión**
   - **Archivos:** `src/js/app.js`
   - **Hacer:** `ADD_ACTIVITY` (al final del arreglo, nunca reordena), `UPDATE_ACTIVITY` (no toca `expenses`), `DELETE_ACTIVITY` (conserva el gasto y quita el enlace), `CONVERT_ACTIVITY` (enlace bidireccional).
   - **REQ:** 035, 036, 043, 044, 045, 059, 060, 061
@@ -271,14 +271,14 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
 
 ## Fase 6 — Interfaz base
 
-- [ ] **T-17 Helper `el()`, `AppShell`, `NavTabs`, `render` y `StorageNotice`**
+- [x] **T-17 Helper `el()`, `AppShell`, `NavTabs`, `render` y `StorageNotice`**
   - **Archivos:** `src/js/ui.js`, `src/js/app.js` (solo la llamada a `render`)
   - **Hacer:** construir el DOM con `textContent` (nunca `innerHTML` con datos); 4 pestañas (Control Diario, Itinerario, Presupuesto y Categorías, Gastos); aviso de estado dañado y de fallo al guardar.
   - **REQ:** 041, 064 · **Diseño:** §4, D5, D12
   - **Aceptación:**
     - Se puede cambiar de pestaña.
     - Con `'{roto'` en storage aparece el aviso y la app no se bloquea.
-- [ ] **T-18 `EmptyTripState` / `TripForm` y `TripHeader`**
+- [x] **T-18 `EmptyTripState` / `TripForm` y `TripHeader`**
   - **Archivos:** `src/js/ui.js`
   - **Hacer:**
     - Sin viaje: pantalla vacía con el formulario.
@@ -289,14 +289,14 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
 
 ## Fase 7 — Dashboard global y categorías
 
-- [ ] **T-19 `CategoryBreakdown`, `BudgetTotals`, `GlobalProgressBar`**
+- [x] **T-19 `CategoryBreakdown`, `BudgetTotals`, `GlobalProgressBar`**
   - **Archivos:** `src/js/ui.js`
   - **REQ:** 006, 012, 013, 014, 051, 052
   - **Aceptación con el dataset:**
     - Se muestra Total $2,370.00 · Gastado $376.50 · Comprometido $320.00 · Disponible $1,993.50 · barra 16 %.
     - Imprevistos muestra "Sin presupuesto".
     - Si el gastado supera el total, el disponible aparece en negativo y en rojo.
-- [ ] **T-20 `CategoryManager` y `ReassignCategoryDialog`**
+- [x] **T-20 `CategoryManager` y `ReassignCategoryDialog`**
   - **Archivos:** `src/js/ui.js`
   - **REQ:** 015, 016, 017, 018, 023, 048, 049
   - **Aceptación:**
@@ -306,17 +306,17 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
 
 ## Fase 8 — Control diario (núcleo del negocio)
 
-- [ ] **T-21 `DaySelector`**
+- [x] **T-21 `DaySelector`**
   - **Archivos:** `src/js/ui.js`
   - **REQ:** 054
   - **Aceptación:** muestra 8 botones; marca HOY cuando la fecha cae dentro del viaje; al hacer clic en un día se actualiza todo el panel.
-- [ ] **T-22 `DailyCategoryCard` (comida y transporte) y `StatusLegend`**
+- [x] **T-22 `DailyCategoryCard` (comida y transporte) y `StatusLegend`**
   - **Archivos:** `src/js/ui.js`
   - **REQ:** 019, 020, 021, 022, 050, 052
   - **Aceptación (Día 2):**
     - Comida: Asignado Hoy $70.00 · Acumulado Hoy $44.50 · Disponible Hoy +$25.50 · 64 % Verde.
     - Transporte: $47.50 / $12.00 / +$35.50 · 25 % Verde.
-- [ ] **T-23 `ExpenseForm` con validación en vivo**
+- [x] **T-23 `ExpenseForm` con validación en vivo**
   - **Archivos:** `src/js/ui.js`
   - **Campos:** Fecha, Categoría, Tipo de comida (solo si es Comida), Monto, Descripción y la casilla Gasto fijo.
   - **Comportamiento:** los errores aparecen mientras se escribe y Guardar se deshabilita si hay errores. Exceder el límite diario **no** bloquea el registro.
@@ -325,7 +325,7 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
     - Monto `-5` → "El monto debe ser mayor a 0" y Guardar deshabilitado.
     - `localStorage` no cambia.
     - Un gasto válido actualiza al instante la tarjeta, el historial y el dashboard.
-- [ ] **T-24 `QuickMealButtons`**
+- [x] **T-24 `QuickMealButtons`**
   - **Archivos:** `src/js/ui.js`
   - **REQ:** 029 · **Decisión:** T-00.5
   - **Aceptación:**
@@ -334,13 +334,13 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
 
 ## Fase 9 — Historial de gastos
 
-- [ ] **T-25 `ExpenseHistory` / `DayGroup` / `ExpenseRow` y pestaña Gastos**
+- [x] **T-25 `ExpenseHistory` / `DayGroup` / `ExpenseRow` y pestaña Gastos**
   - **Archivos:** `src/js/ui.js`
   - **REQ:** 011, 047, 053
   - **Aceptación:**
     - Los gastos aparecen agrupados por fecha, y el grupo del Día 2 muestra "Total del Día: $56.50".
     - Existe el grupo "Pre-viaje / Fijos" con la reserva de $320, que no suma al Total del Día.
-- [ ] **T-26 Editar (`ExpenseModal`) y eliminar (`ConfirmDialog`) gastos**
+- [x] **T-26 Editar (`ExpenseModal`) y eliminar (`ConfirmDialog`) gastos**
   - **Archivos:** `src/js/ui.js`
   - **REQ:** 033, 057, 058
   - **Aceptación:**
@@ -349,14 +349,14 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
 
 ## Fase 10 — Itinerario y conversión
 
-- [ ] **T-27 `ItineraryList` / `ItineraryItem` / `ActivityForm` y pestaña Itinerario**
+- [x] **T-27 `ItineraryList` / `ItineraryItem` / `ActivityForm` y pestaña Itinerario**
   - **Archivos:** `src/js/ui.js`
   - **REQ:** 031, 034, 035, 036, 059, 060, 061
   - **Aceptación:**
     - No existe ningún botón ni flujo que sugiera o genere actividades.
     - Las actividades se muestran en orden de inserción.
     - Cambiar el estado funciona, excepto sacar de `completado` una actividad convertida.
-- [ ] **T-28 Flujo "Convertir a gasto"**
+- [x] **T-28 Flujo "Convertir a gasto"**
   - **Archivos:** `src/js/ui.js`
   - **REQ:** 043, 044, 045, 046
   - **Aceptación:**
@@ -365,14 +365,14 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
 
 ## Fase 11 — Diálogos y casos de borde
 
-- [ ] **T-29 Editar fechas del viaje y eliminar el viaje**
+- [x] **T-29 Editar fechas del viaje y eliminar el viaje**
   - **Archivos:** `src/js/ui.js`
   - **REQ:** 008, 009, 032, 037, 063
   - **Aceptación:**
     - Cambiar el fin al 2026-10-10 lista los elementos fuera de rango sin borrarlos y recalcula los límites (comida = $560.00 para 1 día).
     - Editar uno de esos elementos exige moverlo a 2026-10-10; eliminarlo sí se permite (T-00.6).
     - Eliminar el viaje muestra los conteos y pide confirmación.
-- [ ] **T-30 Pruebas de robustez y seguridad**
+- [x] **T-30 Pruebas de robustez y seguridad**
   - **Archivos:** solo correcciones donde fallen (bajo Unchanged Behavior)
   - **REQ:** 038, 041, 064
   - **Aceptación:**
@@ -383,7 +383,7 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
 
 ## Fase 12 — Verificación contra el negocio y aprobación del cliente (Paso 4 del S3L2)
 
-- [ ] **T-31 Auditoría del Cliente: los 3 puntos críticos**
+- [x] **T-31 Auditoría del Cliente: los 3 puntos críticos**
   1. **Persistencia:** registrar un gasto, presionar **F5** → el gasto, los totales y el día seleccionado siguen igual.
   2. **Restricciones semánticas:** ingresar un gasto de **−5** → se rechaza en vivo, Guardar queda deshabilitado y `localStorage` no cambia.
   3. **Lógica dinámica** (dataset, Día 2, Comida; límite $70.00, acumulado inicial $44.50):
@@ -393,13 +393,34 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
      | + $10.00 | $54.50 | +$15.50 | 78 % | Verde |
      | + $5.00 | $59.50 | +$10.50 | 85 % | Ámbar |
      | + $20.00 | $79.50 | −$9.50 | 114 % | Rojo — **el gasto se registra igual** |
-- [ ] **T-32 Cierre**
+- [x] **T-32 Cierre**
   - Recorrer los 63 REQ de `requirements.md` contra la app (usar la tabla §7 de `design.md` como checklist).
   - Actualizar el `README.md` con "Cómo ejecutarla" ya real.
   - Responder en `retrospective.md` las preguntas del S3L2 con la experiencia de la implementación.
   - Verificar la estructura del repo pedida por el lab.
 
 ---
+
+## Registro de ejecución
+
+| Fases | Tareas | Commit | Archivos |
+|---|---|---|---|
+| 1 | T-01, T-02 | `feat(T-01,T-02)` | `src/index.html`, `src/css/styles.css` |
+| 2 | T-03..T-06 | `feat(T-03..T-06)` | `src/js/calculations.js` |
+| 3 | T-07..T-10 | `feat(T-07..T-10)` | `src/js/validations.js` |
+| 4 | T-11 | `feat(T-11)` | `src/js/storage.js` |
+| 5–11 | T-12..T-30 | `feat(T-12..T-30)` | `src/js/app.js`, `src/js/ui.js` (dependen entre sí: se integraron juntos) |
+| 12 | T-31, T-32 | `docs(T-31,T-32)` | documentación, `REFLECTION.md` |
+
+**Evidencia de verificación** (navegador Chromium automatizado abriendo `src/index.html` con `file://`, con el dataset oficial):
+
+- **65 verificaciones de lógica** sobre `Viajero.calc`, `Viajero.validate` y `Viajero.storage`: todos los criterios de aceptación de T-03..T-11, más bordes extra (80 % exacto = Verde, 100 % = Ámbar, $70.01 = Rojo, cruce de mes, `0.1 + 0.2`). 65/65 OK.
+- **61 verificaciones de interfaz** de punta a punta: crear viaje con errores en vivo, valores del dataset, las 3 pruebas del cliente (T-31), registro rápido, editar y mover un gasto, conversión y doble conversión, eliminar con confirmación, XSS mostrado como texto, categorías (duplicado, asignado 0, eliminar vacía, reasignar), cambio de fechas con lista de afectados, edición bloqueada fuera de rango (T-00.6), fallo de `localStorage` y reintento, eliminar viaje, datos dañados, vista móvil sin scroll horizontal y **cero peticiones de red**. 61/61 OK, sin errores en consola.
+
+**Hallazgos durante la ejecución (corregidos con Unchanged Behavior):**
+
+1. *Borrador de actividad desactualizado:* después de acortar las fechas del viaje, el formulario de actividad conservaba una fecha fuera del rango y el botón quedaba deshabilitado sin explicar por qué. Se corrigió en `UPDATE_TRIP.after` (reiniciar el borrador) y en la regla de visibilidad de errores (D14). Las validaciones y los cálculos no cambiaron, y las 126 verificaciones volvieron a pasar.
+2. *Ambigüedad en REQ-063* ("conservando las categorías del sistema"): se aclaró que se conservan **todas** las categorías, para cumplir REQ-037 (D15).
 
 ## Pruebas de regresión (correr después de cada tarea, cuando ya apliquen)
 
