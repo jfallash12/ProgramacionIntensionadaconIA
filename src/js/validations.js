@@ -1,5 +1,5 @@
 /*
- * validations.js — Viajero.validate
+ * validations.js — Mochila.validate
  * Funciones PURAS: reciben un borrador (valores crudos del formulario) y devuelven
  * { campo: 'mensaje' }. Un objeto vacío significa "válido". RN-05 (docs/design.md §3).
  * Importante (REQ-021): ninguna validación consulta límites diarios; exceder un límite nunca bloquea.
@@ -7,8 +7,8 @@
 (function (global) {
   'use strict';
 
-  var Viajero = global.Viajero = global.Viajero || {};
-  var calc = Viajero.calc;
+  var Mochila = global.Mochila = global.Mochila || {};
+  var calc = Mochila.calc;
 
   var AMOUNT_RE = /^[+-]?\d+(\.\d+)?$/;
   var TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -152,7 +152,7 @@
 
   function hasErrors(errors) { return !!errors && Object.keys(errors).length > 0; }
 
-  Viajero.validate = {
+  Mochila.validate = {
     isBlank: isBlank,
     parseAmount: parseAmount,
     validateTrip: validateTrip,

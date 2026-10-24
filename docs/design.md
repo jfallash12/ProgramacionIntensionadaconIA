@@ -1,4 +1,4 @@
-# Documento de Diseño Técnico y Arquitectura — NomadPulse Travel Assistant
+# Documento de Diseño Técnico y Arquitectura — Mochila
 
 > **ENTREGABLE PRINCIPAL (S3L1).** Traduce la especificación EARS ([`requirements.md`](./requirements.md)),
 > el contrato de datos ([`data-contract.json`](./data-contract.json)) y el wireframe
@@ -9,7 +9,7 @@
 
 **Curso:** Programación Intencional con IA Generativa
 **Estudiante:** José Fallas — jfallash@ucenfotec.ac.cr
-**Aplicación:** Viajero — Asistente Personal de Viaje & Presupuesto
+**Aplicación:** Mochila — Asistente Personal de Viaje & Presupuesto
 **Versión:** 3 (Octubre 2026) · Especificación v2 · Contrato `schemaVersion: 2`
 
 ---
@@ -21,7 +21,7 @@
 | Tipo de app | SPA estática de una sola página (`src/index.html`) |
 | Stack | HTML + CSS puro escrito a mano + JavaScript vanilla (sin frameworks, librerías, build ni CDN) |
 | Estado | **Un objeto de estado en memoria** (`state`) dentro de `app.js` + estado de interfaz (`ui`) no persistido |
-| Persistencia | `localStorage`, clave `viajero.state`, estado completo en cada mutación (REQ-039) |
+| Persistencia | `localStorage`, clave `mochila.state`, estado completo en cada mutación (REQ-039) |
 | Red | Ninguna. Se bloquea por diseño con Content-Security-Policy (REQ-038) |
 | Ejecución | Abrir `src/index.html` con doble clic (`file://`) **o** publicarla en GitHub Pages (§10) |
 | Modelo de viaje | Máximo **un** viaje (REQ-062) |
@@ -35,7 +35,7 @@
 | Backend, API REST, base de datos | Viola REQ-038 (offline, sin servidor) | `localStorage` |
 | IndexedDB / Service Worker / PWA | Más complejidad que valor para este alcance | `localStorage` (los datos caben de sobra) |
 | Ajv u otro validador de JSON Schema | Es una dependencia externa | Validador escrito a mano en `storage.js` que replica el contrato (§5.4) |
-| ES Modules (`import`/`export`) | Los navegadores los bloquean en `file://` | Scripts clásicos con un espacio de nombres global `window.Viajero` (§5.1) |
+| ES Modules (`import`/`export`) | Los navegadores los bloquean en `file://` | Scripts clásicos con un espacio de nombres global `window.Mochila` (§5.1) |
 | Notificaciones / recordatorio diario | No está en la especificación v2 | Fuera de alcance |
 
 ## 2. Memoria semántica: del lenguaje ubicuo al código
@@ -144,14 +144,14 @@ src/
 ├── index.html          ← punto de entrada; CSP; carga los scripts en este orden ↓
 ├── css/styles.css      ← CSS puro (variables de color para los estados ok/warning/exceeded)
 └── js/
-    ├── calculations.js ← Viajero.calc        (funciones puras: derivados RN-01..RN-07, fechas, dinero)
-    ├── validations.js  ← Viajero.validate    (funciones puras: errores por campo)
-    ├── storage.js      ← Viajero.storage     (loadState, saveState, validateState, emptyState)
-    ├── ui.js           ← Viajero.ui          (componentes de render + helper el())
-    └── app.js          ← Viajero.app         (state, ui, dispatch, reducers, eventos, arranque)
+    ├── calculations.js ← Mochila.calc        (funciones puras: derivados RN-01..RN-07, fechas, dinero)
+    ├── validations.js  ← Mochila.validate    (funciones puras: errores por campo)
+    ├── storage.js      ← Mochila.storage     (loadState, saveState, validateState, emptyState)
+    ├── ui.js           ← Mochila.ui          (componentes de render + helper el())
+    └── app.js          ← Mochila.app         (state, ui, dispatch, reducers, eventos, arranque)
 ```
 
-Cada archivo es un script clásico envuelto en una IIFE que registra su API en `window.Viajero`. Así la app funciona con doble clic (`file://`) y también en GitHub Pages.
+Cada archivo es un script clásico envuelto en una IIFE que registra su API en `window.Mochila`. Así la app funciona con doble clic (`file://`) y también en GitHub Pages.
 
 ```mermaid
 graph LR
@@ -168,7 +168,7 @@ Regla de dependencias: `calculations.js` no depende de nada, y solo `app.js` toc
 
 ### 5.2. Estado global en memoria vs. LocalStorage
 
-| | `state` (dominio) | `ui` (interfaz) | `localStorage['viajero.state']` |
+| | `state` (dominio) | `ui` (interfaz) | `localStorage['mochila.state']` |
 |---|---|---|---|
 | Contenido | `schemaVersion, trip, categories, expenses, itinerary` | `activeTab, selectedDate, draft, errors, dialog, notice` | Copia JSON exacta de `state` |
 | Forma | `data-contract.json` | Libre (no se persiste) | `data-contract.json` |
@@ -185,10 +185,10 @@ Regla de dependencias: `calculations.js` no depende de nada, y solo `app.js` toc
 `parseAmount(raw, {label, allowZero})`, `validateTrip(draft)`, `validateCategory(draft, state, originalId)`, `validateCategoryDelete(catId, state)`, `validateExpense(draft, state)`, `validateActivity(draft, state, original)`, `validateConversion(activity)`, `isBlank(v)`, `hasErrors(errors)`.
 
 **`storage.js`:**
-`STORAGE_KEY = 'viajero.state'`, `emptyState()`, `validateState(obj)` (réplica manual del contrato), `loadState()` → `{ state, notice }`, `saveState(state)` → `true | error`.
+`STORAGE_KEY = 'mochila.state'`, `emptyState()`, `validateState(obj)` (réplica manual del contrato), `loadState()` → `{ state, notice }`, `saveState(state)` → `true | error`.
 
 **`app.js`:**
-`state`, `ui`, `dispatch(action)`, tabla `DOMAIN` (por acción: `validate`, `confirm`, `reduce`, `after`), tabla `UI_ACTIONS`, `validateForm(name, draft, id)`, `bindEvents()`, `init()`. Expone `Viajero.app.state` (solo lectura) para verificar desde la consola.
+`state`, `ui`, `dispatch(action)`, tabla `DOMAIN` (por acción: `validate`, `confirm`, `reduce`, `after`), tabla `UI_ACTIONS`, `validateForm(name, draft, id)`, `bindEvents()`, `init()`. Expone `Mochila.app.state` (solo lectura) para verificar desde la consola.
 
 ### 5.4. Ciclo `dispatch` (el único camino para mutar)
 
@@ -281,7 +281,7 @@ stateDiagram-v2
 
 | # | Decisión | Motivo |
 |---|---|---|
-| D1 | Scripts clásicos + `window.Viajero` en lugar de ES Modules | Los módulos ES no cargan desde `file://` |
+| D1 | Scripts clásicos + `window.Mochila` en lugar de ES Modules | Los módulos ES no cargan desde `file://` |
 | D2 | Fechas como texto ISO; se calcula con `Date.UTC` y nunca con `new Date('YYYY-MM-DD')` local | En Costa Rica (UTC−6) un parseo ingenuo corre la fecha un día y rompe RN-01 y el "HOY" |
 | D3 | "HOY" = fecha **local** del dispositivo (`getFullYear/getMonth/getDate`) | REQ-054 |
 | D4 | Sumas en centavos enteros (`Math.round(x*100)`); límites diarios con precisión completa; se redondea solo al mostrar | Evita errores tipo `0.1 + 0.2` y cumple REQ-050 |
@@ -385,7 +385,7 @@ Columnas: **UI** = componente de §4 · **Lógica** = función o reducer de §5.
 | Paso | Entregable | REQ que cierra | Verificación manual |
 |---|---|---|---|
 | 1 | `index.html` + CSP + `styles.css` base + carga de scripts | 038 | La consola no muestra errores; DevTools → Network vacío |
-| 2 | `calculations.js` | 004–006, 011, 019–022, 050–054 | En consola: `Viajero.calc.totalDays({startDate:'2026-10-10',endDate:'2026-10-17'}) === 8` |
+| 2 | `calculations.js` | 004–006, 011, 019–022, 050–054 | En consola: `Mochila.calc.totalDays({startDate:'2026-10-10',endDate:'2026-10-17'}) === 8` |
 | 3 | `validations.js` | 002, 003, 018, 023, 025–031, 047, 055, 061, 065 | Casos de la retrospectiva: `-5`, `'abc'`, `'  '`, `2026-02-30` |
 | 4 | `storage.js` | 039–041, 064 | Pegar JSON roto en `localStorage` y recargar → aviso + estado vacío |
 | 5 | `app.js` (`dispatch`, reducers) | 001, 008–010, 015–017, 033, 042–049, 056–063 | Crear viaje, gastos y actividades; recargar y comprobar que persisten |

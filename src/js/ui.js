@@ -1,5 +1,5 @@
 /*
- * ui.js — Viajero.ui
+ * ui.js — Mochila.ui
  * Componentes de render (docs/design.md §4). Reciben (state, ui) y devuelven nodos DOM.
  * No mutan el estado: emiten acciones con data-action / data-submit que app.js captura.
  * Seguridad (D5): el DOM se construye con textContent; nunca innerHTML con datos del usuario.
@@ -7,7 +7,7 @@
 (function (global) {
   'use strict';
 
-  var V = global.Viajero = global.Viajero || {};
+  var V = global.Mochila = global.Mochila || {};
   var calc = V.calc;
   var doc = global.document;
 
@@ -581,7 +581,7 @@
     S = state; U = uiState; H = helpers;
     var content = el('div', { class: 'layout' },
       el('header', { class: 'app-header' },
-        el('h1', null, 'Viajero'),
+        el('h1', null, 'Mochila'),
         el('span', { class: 'muted' }, 'Asistente de viaje y presupuesto · 100 % offline')),
       StorageNotice(),
       S.trip ? [TripHeader(), NavTabs(), el('main', null, View())] : el('main', null, EmptyTripState()),

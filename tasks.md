@@ -1,4 +1,4 @@
-# tasks.md — Plan de Implementación de NomadPulse Travel Assistant ("Viajero")
+# tasks.md — Plan de Implementación de Mochila
 
 > **Laboratorio S3L2 — Re-ingeniería Intencional (Spec-Driven Coding).**
 > Plan de desarrollo incremental y verificable, ordenado por fases, generado con IA a partir de los insumos
@@ -51,7 +51,7 @@ Corrige/ajusta: <descripción exacta del problema o del cambio de interfaz>.
 UNCHANGED BEHAVIOR — debe seguir funcionando EXACTAMENTE igual:
 - Cálculos de calculations.js (límite diario, disponible, estados, Total del Día, presupuesto global).
 - Validaciones de validations.js (montos ≤ 0, no numéricos, > 2 decimales, fechas, textos vacíos).
-- Persistencia en localStorage en cada mutación (clave 'viajero.state').
+- Persistencia en localStorage en cada mutación (clave 'mochila.state').
 - Tareas ya completadas en tasks.md: <lista T-XX>.
 Toca solo: <archivos>. Muestra el diff y confirma que las pruebas R1–R5 siguen pasando.
 ```
@@ -73,10 +73,10 @@ Para todas las verificaciones se usa el **segundo ejemplo** de `docs/data-contra
 **Cargar el dataset** (consola del navegador, con la app abierta; luego recargar con F5):
 
 ```js
-localStorage.setItem('viajero.state', JSON.stringify(/* pegar aquí examples[1] de data-contract.json */));
+localStorage.setItem('mochila.state', JSON.stringify(/* pegar aquí examples[1] de data-contract.json */));
 ```
 
-**Limpiar:** `localStorage.removeItem('viajero.state')` y recargar.
+**Limpiar:** `localStorage.removeItem('mochila.state')` y recargar.
 
 | Valor esperado con el dataset | Resultado |
 |---|---|
@@ -127,9 +127,9 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
     - Regiones del layout del wireframe (`header`, `nav`, `main`, contenedor de diálogos).
     - `<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'none'">`.
     - Scripts clásicos en el orden `calculations → validations → storage → ui → app`.
-    - Cada script es una IIFE que registra su API en `window.Viajero` (`calc`, `validate`, `storage`, `ui`, `app`).
+    - Cada script es una IIFE que registra su API en `window.Mochila` (`calc`, `validate`, `storage`, `ui`, `app`).
   - **REQ:** 038 · **Diseño:** §1, §5.1, D1, D6
-  - **Aceptación:** al abrir con doble clic (`file://`), `Object.keys(Viajero)` devuelve los 5 módulos; la consola no tiene errores y Network está vacío.
+  - **Aceptación:** al abrir con doble clic (`file://`), `Object.keys(Mochila)` devuelve los 5 módulos; la consola no tiene errores y Network está vacío.
 - [x] **T-02 `styles.css` base**
   - **Archivos:** `src/css/styles.css`, `src/index.html` (solo el `<link>`).
   - **Hacer:**
@@ -215,7 +215,7 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
 - [x] **T-11 Persistencia en LocalStorage**
   - **Archivos:** `src/js/storage.js`
   - **Hacer:**
-    - `STORAGE_KEY = 'viajero.state'` y `emptyState()` (`trip: null` + `cat-comida` + `cat-transporte`).
+    - `STORAGE_KEY = 'mochila.state'` y `emptyState()` (`trip: null` + `cat-comida` + `cat-transporte`).
     - `validateState()` replica a mano el contrato: tipos, `required`, enums, `additionalProperties`, `mealType` condicional, `schemaVersion` y las categorías del sistema.
     - `loadState()` devuelve `{ state, notice }`.
     - `saveState()` devuelve `true` o un error, **sin lanzar excepción**.
@@ -414,7 +414,7 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
 
 **Evidencia de verificación** (navegador Chromium automatizado abriendo `src/index.html` con `file://`, con el dataset oficial):
 
-- **65 verificaciones de lógica** sobre `Viajero.calc`, `Viajero.validate` y `Viajero.storage`: todos los criterios de aceptación de T-03..T-11, más bordes extra (80 % exacto = Verde, 100 % = Ámbar, $70.01 = Rojo, cruce de mes, `0.1 + 0.2`). 65/65 OK.
+- **65 verificaciones de lógica** sobre `Mochila.calc`, `Mochila.validate` y `Mochila.storage`: todos los criterios de aceptación de T-03..T-11, más bordes extra (80 % exacto = Verde, 100 % = Ámbar, $70.01 = Rojo, cruce de mes, `0.1 + 0.2`). 65/65 OK.
 - **61 verificaciones de interfaz** de punta a punta: crear viaje con errores en vivo, valores del dataset, las 3 pruebas del cliente (T-31), registro rápido, editar y mover un gasto, conversión y doble conversión, eliminar con confirmación, XSS mostrado como texto, categorías (duplicado, asignado 0, eliminar vacía, reasignar), cambio de fechas con lista de afectados, edición bloqueada fuera de rango (T-00.6), fallo de `localStorage` y reintento, eliminar viaje, datos dañados, vista móvil sin scroll horizontal y **cero peticiones de red**. 61/61 OK, sin errores en consola.
 
 **Hallazgos durante la ejecución (corregidos con Unchanged Behavior):**
@@ -430,7 +430,7 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
 | R2 | **Montos negativos:** `-5`, `0`, `'abc'`, `6.505` se rechazan y el estado no cambia | T-08 (consola) / T-23 (UI) |
 | R3 | **Cálculo dinámico:** con el dataset, Comida Día 2 = $70.00 / $44.50 / +$25.50 / 64 % | T-05 (consola) / T-22 (UI) |
 | R4 | **Consola limpia** y **Network vacío** | T-01 |
-| R5 | **Contrato:** `Viajero.storage.validateState(Viajero.app.state)` es válido tras cualquier acción | T-12 |
+| R5 | **Contrato:** `Mochila.storage.validateState(Mochila.app.state)` es válido tras cualquier acción | T-12 |
 
 ## Matriz de cobertura REQ → tarea
 

@@ -1,12 +1,12 @@
 /*
- * calculations.js — Viajero.calc
+ * calculations.js — Mochila.calc
  * Funciones PURAS (sin DOM, sin estado propio): fechas, dinero y valores derivados.
  * Reglas: RN-01..RN-04, RN-06, RN-07 (docs/design.md §3). Nada de lo que se calcula aquí se persiste.
  */
 (function (global) {
   'use strict';
 
-  var Viajero = global.Viajero = global.Viajero || {};
+  var Mochila = global.Mochila = global.Mochila || {};
 
   var DAY_MS = 86400000;
   var ISO_RE = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
@@ -272,7 +272,7 @@
       !activity.convertedExpenseId;
   }
 
-  Viajero.calc = {
+  Mochila.calc = {
     CAT_FOOD: CAT_FOOD,
     CAT_TRANSPORT: CAT_TRANSPORT,
     MEAL_TYPES: MEAL_TYPES,

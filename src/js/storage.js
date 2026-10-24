@@ -1,15 +1,15 @@
 /*
- * storage.js — Viajero.storage
+ * storage.js — Mochila.storage
  * Persistencia en LocalStorage (REQ-039, REQ-040, REQ-041, REQ-064).
  * validateState() replica a mano docs/data-contract.json (D8: sin librerías de JSON Schema).
  */
 (function (global) {
   'use strict';
 
-  var Viajero = global.Viajero = global.Viajero || {};
-  var calc = Viajero.calc;
+  var Mochila = global.Mochila = global.Mochila || {};
+  var calc = Mochila.calc;
 
-  var STORAGE_KEY = 'viajero.state';
+  var STORAGE_KEY = 'mochila.state';
   var SCHEMA_VERSION = 2;
 
   var RE = {
@@ -167,7 +167,7 @@
     }
     var check = validateState(parsed);
     if (!check.valid) {
-      if (global.console) { global.console.warn('[Viajero] Estado guardado inválido:', check.errors); }
+      if (global.console) { global.console.warn('[Mochila] Estado guardado inválido:', check.errors); }
       return { state: emptyState(), notice: corruptNotice() };
     }
     return { state: parsed, notice: null };
@@ -190,7 +190,7 @@
     }
   }
 
-  Viajero.storage = {
+  Mochila.storage = {
     STORAGE_KEY: STORAGE_KEY,
     SCHEMA_VERSION: SCHEMA_VERSION,
     emptyState: emptyState,

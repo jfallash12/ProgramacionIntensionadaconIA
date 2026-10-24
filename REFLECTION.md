@@ -1,6 +1,6 @@
 # REFLECTION.md — Autoevaluación de Alineación
 
-**Proyecto:** NomadPulse Travel Assistant ("Viajero") — Greenfield Intentional App
+**Proyecto:** Mochila — Greenfield Intentional App
 **Estudiante:** José Fallas — jfallash@ucenfotec.ac.cr
 **Curso:** Programación Intencional con IA Generativa
 
@@ -28,7 +28,7 @@ La IA tomó varias decisiones que yo no había pedido. Las clasifico así:
 
 **Aciertos (las adopté y quedaron documentadas en `design.md` §6):**
 
-- **Scripts clásicos en lugar de ES Modules.** Yo había pedido "JS modular" y "abrir con doble clic", y esas dos cosas son incompatibles en `file://`. La IA lo detectó y propuso `window.Viajero` (D1).
+- **Scripts clásicos en lugar de ES Modules.** Yo había pedido "JS modular" y "abrir con doble clic", y esas dos cosas son incompatibles en `file://`. La IA lo detectó y propuso `window.Mochila` (D1).
 - **Fechas con `Date.UTC`.** En Costa Rica (UTC−6), `new Date('2026-10-10')` cae el 9 de octubre. La IA lo previó antes de que existiera el error (D2).
 - **CSP que bloquea la red y DOM con `textContent`.** Volvió verificables REQ-038 y la seguridad ante texto malicioso (D5, D6).
 - **Red de seguridad en `dispatch`.** Antes de guardar, el nuevo estado se valida contra el contrato (D13). Nadie lo pidió, pero garantiza que nunca se persista basura.

@@ -7,13 +7,13 @@
 
 ## 1. ¿Qué es este proyecto?
 
-**NomadPulse Travel Assistant** (aplicación "Viajero") es una app de viajes 100% offline que
+**Mochila** es una app de viajes 100% offline que
 controla un presupuesto por categorías personalizables, con **límites diarios de comida y transporte**
 (alertas visuales de sobre-gasto), Total del Día, itinerario del viaje y conversión de actividades a gastos.
 
 - **Curso:** Programación Intencional con IA Generativa — Proyecto Final (Greenfield Intentional App).
-- **Stack:** HTML + CSS puro (escrito a mano, **sin frameworks, librerías ni CDN**) + JavaScript vanilla en scripts clásicos (`window.Viajero`).
-- **Persistencia:** `localStorage` del navegador (clave `viajero.state`). **Sin servidor, sin internet** (REQ-038).
+- **Stack:** HTML + CSS puro (escrito a mano, **sin frameworks, librerías ni CDN**) + JavaScript vanilla en scripts clásicos (`window.Mochila`).
+- **Persistencia:** `localStorage` del navegador (clave `mochila.state`). **Sin servidor, sin internet** (REQ-038).
 - **Metodología:** especificación EARS (`WHEN …, IF …, THEN the system SHALL …`) en [`docs/requirements.md`](docs/requirements.md).
 
 ## 2. Fuentes de verdad (orden de precedencia)
@@ -100,7 +100,7 @@ Estos son los `SHALL NOT` del sistema — no los toques sin cambiar primero `doc
 
 > La arquitectura completa (componentes, API de cada módulo, `dispatch`, diagramas y mapeo REQ → función) está en [`docs/design.md`](docs/design.md). Respeta esos nombres.
 
-- JS en `src/js/`, cargado como **scripts clásicos** (no ES Modules, que no funcionan en `file://`) en este orden: `calculations.js` → `validations.js` → `storage.js` → `ui.js` → `app.js`. Cada archivo es una IIFE que registra su API en `window.Viajero` (`Viajero.calc`, `Viajero.validate`, `Viajero.storage`, `Viajero.ui`, `Viajero.app`).
+- JS en `src/js/`, cargado como **scripts clásicos** (no ES Modules, que no funcionan en `file://`) en este orden: `calculations.js` → `validations.js` → `storage.js` → `ui.js` → `app.js`. Cada archivo es una IIFE que registra su API en `window.Mochila` (`Mochila.calc`, `Mochila.validate`, `Mochila.storage`, `Mochila.ui`, `Mochila.app`).
 - **Solo `app.js` muta el estado**, y siempre mediante `dispatch(action)`: validar → (confirmar) → reducer → `storage.saveState` → `ui.render`. `calculations.js` y `validations.js` son funciones puras sin DOM.
 - Prohibido: frameworks, Redux u otro store, backend, IndexedDB, Service Workers, `fetch`/XHR, CDNs, `innerHTML` con datos del usuario (usar `textContent` con el helper `el()`).
 - Fechas: texto ISO `YYYY-MM-DD`; cálculos con `Date.UTC`; nunca `new Date('YYYY-MM-DD')` para fechas locales; "HOY" = fecha local del dispositivo.

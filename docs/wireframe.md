@@ -1,6 +1,6 @@
 # Boceto de la UI (Wireframe) — Layout por Componentes
 
-**Aplicación:** Viajero — Asistente Personal de Viaje & Presupuesto (NomadPulse Travel Assistant)
+**Aplicación:** Mochila — Asistente Personal de Viaje & Presupuesto
 **Laboratorio S1L2:** Entrevista, Diseño de Dominio y Wireframing (actualizado a la especificación v2)
 
 > Versión gráfica editable: [`wireframe.excalidraw`](./wireframe.excalidraw) (abrir en excalidraw.com → *Open*).

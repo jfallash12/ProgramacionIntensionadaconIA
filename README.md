@@ -1,4 +1,4 @@
-# NomadPulse Travel Assistant ("Viajero")
+# Mochila
 
 Asistente personal de viaje con presupuesto por categorías personalizables, límites diarios de **comida y transporte** con alertas visuales, Total del Día, itinerario y conversión de actividades a gastos. **100% offline**: los datos viven en el `localStorage` del navegador, sin servidores ni conexión a internet.
 
@@ -47,15 +47,15 @@ Sin dependencias, sin build, sin servidor y sin internet:
 1. Clonar o descargar el repositorio.
 2. Abrir `src/index.html` con doble clic en Chrome, Edge o Firefox.
 
-Los datos se guardan en el `localStorage` del navegador (clave `viajero.state`).
+Los datos se guardan en el `localStorage` del navegador (clave `mochila.state`).
 
 **Cargar datos de prueba (opcional):** abra la consola del navegador (F12), pegue la línea siguiente sustituyendo `<ejemplo>` por `examples[1]` de [`docs/data-contract.json`](docs/data-contract.json), y recargue con F5:
 
 ```js
-localStorage.setItem('viajero.state', JSON.stringify(<ejemplo>));
+localStorage.setItem('mochila.state', JSON.stringify(<ejemplo>));
 ```
 
-Para empezar de cero: `localStorage.removeItem('viajero.state')` y F5.
+Para empezar de cero: `localStorage.removeItem('mochila.state')` y F5.
 
 ## Demostración (auditoría del cliente)
 
@@ -80,7 +80,7 @@ Con los datos de prueba, seleccione el **Día 2** en el Control Diario:
 ## Stack
 
 - **HTML + CSS puro** (escrito a mano — sin frameworks, librerías ni CDN).
-- **JavaScript vanilla** en scripts clásicos (`src/js/calculations.js`, `validations.js`, `storage.js`, `ui.js`, `app.js`) bajo el espacio de nombres `window.Viajero`.
+- **JavaScript vanilla** en scripts clásicos (`src/js/calculations.js`, `validations.js`, `storage.js`, `ui.js`, `app.js`) bajo el espacio de nombres `window.Mochila`.
 - **Persistencia** en `localStorage` con restauración automática al iniciar y manejo de estado corrupto.
 
 ## Requerimientos

@@ -1,4 +1,4 @@
-﻿# Especificación de Requerimientos: NomadPulse Travel Assistant
+﻿# Especificación de Requerimientos: Mochila
 
 > **Metodología:** Sintaxis EARS (Easy Approach to Requirements Syntax).
 > Patrón general: `WHEN <disparador>, IF <condición>, THEN the system SHALL <respuesta>`.

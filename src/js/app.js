@@ -1,12 +1,12 @@
 /*
- * app.js — Viajero.app
+ * app.js — Mochila.app
  * Único dueño del estado. Todo cambio pasa por dispatch(action) (docs/design.md §5.4):
  *   requireTrip → validar → (confirmar) → reducer → validar contrato → saveState → render
  */
 (function (global) {
   'use strict';
 
-  var V = global.Viajero = global.Viajero || {};
+  var V = global.Mochila = global.Mochila || {};
   var calc = V.calc;
   var validate = V.validate;
   var storage = V.storage;
@@ -560,7 +560,7 @@
 
     var def = DOMAIN[action.type];
     if (!def) {
-      if (global.console) { global.console.warn('[Viajero] Acción desconocida:', action.type); }
+      if (global.console) { global.console.warn('[Mochila] Acción desconocida:', action.type); }
       return;
     }
 
@@ -601,7 +601,7 @@
     // Red de seguridad: nunca se acepta ni se persiste un estado que no cumple el contrato.
     var check = storage.validateState(next);
     if (!check.valid) {
-      if (global.console) { global.console.error('[Viajero] Cambio rechazado, rompe el contrato:', check.errors); }
+      if (global.console) { global.console.error('[Mochila] Cambio rechazado, rompe el contrato:', check.errors); }
       setNotice('error', 'No se aplicó el cambio porque el resultado no cumple el contrato de datos.');
       render();
       return;

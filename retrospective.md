@@ -1,4 +1,4 @@
-# Retrospectiva — NomadPulse Travel Assistant
+# Retrospectiva — Mochila
 
 > Análisis y reflexiones sobre el proceso de especificación intencional y las correcciones
 > aplicadas tras la retroalimentación. Complementa a [`docs/requirements.md`](docs/requirements.md)
@@ -45,6 +45,7 @@
 | 30 | Implementación completa en `src/` (T-01..T-30), verificada con 126 pruebas automatizadas y las 3 pruebas del cliente | Proyecto Final |
 | 31 | Corrección del borrador de actividad desactualizado tras acortar el viaje y regla D14 de visibilidad de errores | Hallazgo durante la verificación, corregido con Unchanged Behavior |
 | 32 | REQ-063 aclarado (se conservan todas las categorías) y `CLAUDE.md` §10 con las reglas de gobierno de la IA | Proyecto Final: archivo de reglas que restringe el stack y prohíbe parches fuera de la especificación |
+| 33 | Nombre de la app: **Mochila** (antes "Viajero" / "NomadPulse Travel Assistant") en interfaz, código (`window.Mochila`, clave `mochila.state`) y documentos | Decisión del estudiante; las 126 verificaciones se repitieron sin cambios en el comportamiento |
 
 ## 2. Reflexión sobre la Especificación Intencional
 
@@ -62,7 +63,7 @@ Los requerimientos dicen *qué* debe pasar, pero no *cómo*. Al pasar a diseño 
 
 - **Manejo de estado:** un único objeto `state` en memoria y una función `dispatch(action)` como único camino para mutarlo. El estado de interfaz (`ui`: pestaña activa, día seleccionado, borradores, errores) queda separado y no se persiste.
 - **División de componentes:** el wireframe se convirtió en unos 20 componentes de render con responsabilidades y acciones explícitas.
-- **Carga de scripts:** los requerimientos piden abrir la app sin servidor, pero los ES Modules no funcionan en `file://`. Por eso se usan scripts clásicos con un espacio de nombres `window.Viajero`.
+- **Carga de scripts:** los requerimientos piden abrir la app sin servidor, pero los ES Modules no funcionan en `file://`. Por eso se usan scripts clásicos con un espacio de nombres `window.Mochila`.
 - **Fechas y zona horaria:** en Costa Rica (UTC−6), `new Date('2026-10-10')` muestra el 9 de octubre. Se decidió calcular con `Date.UTC` y tomar "HOY" de la fecha local.
 - **Dinero:** sumar en centavos para evitar errores de punto flotante.
 - **Seguridad:** construir el DOM con `textContent` para que una descripción con HTML no se ejecute, y usar una CSP que bloquee la red (hace verificable REQ-038).

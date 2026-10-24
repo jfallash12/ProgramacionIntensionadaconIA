@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/jfallash12/ProgramacionIntensionadaconIA/docs/data-contract.json",
   "title": "TravelAssistantState",
-  "description": "Estado completo de la aplicación Viajero (NomadPulse). Todo este objeto se persiste en LocalStorage (clave 'viajero.state') en cada mutación y se restaura al iniciar (REQ-039, REQ-040).",
+  "description": "Estado completo de la aplicación Mochila. Todo este objeto se persiste en LocalStorage (clave 'mochila.state') en cada mutación y se restaura al iniciar (REQ-039, REQ-040).",
   "$comment": "Campos DERIVADOS, nunca persistidos (se recalculan en cada render/mutación): totalDays = (endDate - startDate) + 1 (inclusivo, RN-01); presupuestoTotal = Σ categories[].allocated (RN-06); dailyLimit(categoría diaria) = allocated / totalDays (RN-02); acumuladoDelDia, disponibleHoy, totalDelDia (RN-03, RN-07). Reglas que JSON Schema NO puede expresar y que valida validations.js: endDate >= startDate (REQ-003); fecha de gastos NO fijos dentro del rango del viaje (REQ-027); nombres de categoría únicos sin distinguir mayúsculas (REQ-018); categoryId, linkedActivityId y convertedExpenseId deben existir (integridad referencial); un enlace actividad<->gasto es bidireccional (REQ-044); los montos tienen máximo 2 decimales (REQ-065).",
   "type": "object",
   "additionalProperties": false,
