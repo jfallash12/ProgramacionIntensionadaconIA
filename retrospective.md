@@ -40,6 +40,8 @@
 | 25 | Porcentaje del día 63 % → **64 %** (44.50 / 70 = 63.57 %) | Regla de redondeo explícita (REQ-050) |
 | 26 | Nuevos REQ-064 (fallo al guardar en LocalStorage) y REQ-065 (máximo 2 decimales) | Vacíos detectados al pasar a diseño (S3L1, `design.md` §6) |
 | 27 | `design.md` v3: componentes, módulos, estado, 6 diagramas Mermaid y mapeo de los 63 REQ | Requisitos de la guía S3L1 |
+| 28 | `tasks.md`: plan por fases con criterios de aceptación, dataset oficial, pruebas de regresión y matriz REQ → tarea | Requisitos de la guía S3L2 |
+| 29 | `CLAUDE.md`: invariantes del negocio del S3L2 y protocolo de trabajo con `tasks.md` + Unchanged Behavior | Requisitos de la guía S3L2 (Paso 2) |
 
 ## 2. Reflexión sobre la Especificación Intencional
 
@@ -71,7 +73,55 @@ Con el glosario y las entidades (`Trip`, `GlobalBudget`, `DailyFoodLimit`, `Expe
 
 Sí. Se descartaron React y Redux (un solo usuario y un solo viaje no justifican un store), un backend con base de datos (viola REQ-038), IndexedDB/Service Workers, y Ajv para validar el JSON Schema (es una dependencia). También se reemplazaron los ES Modules por scripts clásicos. Queda una arquitectura de 5 archivos JS sin dependencias, con un solo flujo de datos (`dispatch` → validar → reducer → guardar → render) que se puede explicar en un diagrama (`design.md` §5.4).
 
-## 4. Lecciones del proceso de corrección
+## 4. Reflexión S3L2 — Re-ingeniería Intencional (Spec-Driven Coding)
+
+> Respuestas escritas al terminar la auditoría de artefactos y el plan [`tasks.md`](tasks.md), antes de programar. Al cerrar la implementación (tarea T-32) se completan con lo observado al generar el código.
+
+**1. Arquitectura Orientada a IA — ¿Cómo facilitó la organización de los archivos de contexto (CLAUDE.md, tasks.md, requirements.md) el trabajo del agente de IA al momento de generar, corregir o refactorizar el código?**
+
+Cada archivo responde una pregunta distinta, así que el agente no tiene que adivinar:
+
+- `requirements.md` dice **qué** debe pasar (63 REQ en EARS).
+- `data-contract.json` dice **con qué datos**: nombres exactos de campos y reglas.
+- `design.md` dice **dónde** va cada regla (componente y función).
+- `CLAUDE.md` dice **cómo nombrar y qué nunca romper**: entidades, invariantes y prohibiciones.
+- `tasks.md` dice **en qué orden** y **cómo se comprueba** cada paso.
+
+Con esta organización cada pedido a la IA es corto y verificable: "ejecuta T-08, archivos permitidos `validations.js`, REQ 025–029". La IA no tiene que releer todo ni inventar estructura, y cada resultado se compara contra un criterio de aceptación concreto (por ejemplo, `-5` rechazado o `dayTotal('2026-10-11') === 56.5`). Para corregir o refactorizar basta citar la tarea y el REQ afectados, porque la matriz REQ → tarea de `tasks.md` indica qué más podría romperse.
+
+**2. Auditoría de Insumos — ¿Qué inconsistencias o vacíos descubriste al revisar y armonizar tu contrato de datos JSON con las especificaciones EARS antes de comenzar a programar?**
+
+La mayoría de los problemas eran desalineaciones entre artefactos, no errores de lógica (detalle en §1.1):
+
+- **El contrato no podía representar lo que pedían los REQ.**
+  - Las categorías eran un enum fijo, aunque REQ-015..018 permitían crearlas y eliminarlas.
+  - No existía un campo para marcar gastos fijos (REQ-010..014).
+  - El estado `converted` de REQ-044 no existía en el schema.
+  - El estado vacío (`trip: null`) que exigen REQ-041/042 era inválido.
+- **El contrato era permisivo:** aceptaba campos inventados, la hora `99:99`, descripciones de solo espacios y `mealType` en gastos que no son de comida.
+- **REQ contradictorios entre sí o con la entrevista:**
+  - Un "presupuesto sin asignar" (REQ-024) era imposible si el global es la suma de las categorías.
+  - REQ-027 rechazaba fechas fuera del viaje, aunque los tiquetes se compran antes.
+  - El transporte también es diario según la entrevista, pero solo comida tenía límite.
+- **Vacíos que aparecieron al planificar** (`tasks.md` Fase 0):
+  - Ningún REQ cubría el fallo al guardar en LocalStorage ni el máximo de decimales; se agregaron REQ-064 y REQ-065.
+  - El "Registro en 1 clic" del wireframe no podía registrar un gasto sin monto; se decidió que precarga el formulario.
+  - Las cifras del wireframe y las del ejemplo del contrato no coincidían; se fijó un único dataset de verificación.
+  - Faltaba definir qué pasa al editar elementos que quedaron fuera del rango tras cambiar las fechas del viaje. Se decidió que primero hay que moverlos dentro del viaje (T-00.6; REQ-009, REQ-027 y REQ-031 actualizados).
+
+**3. Mantenibilidad y Unchanged Behavior — ¿Qué diferencia notaste al solicitar correcciones bajo la regla de Unchanged Behavior frente a las modificaciones a ciegas realizadas en el primer laboratorio?**
+
+En el primer laboratorio los cambios se pedían "a ciegas": se describía el síntoma y la IA reescribía bloques completos. A veces arreglaba lo pedido y rompía algo que ya funcionaba, y había que descubrirlo probando todo de nuevo. Con Unchanged Behavior cada corrección declara explícitamente qué **no** puede cambiar: los cálculos de `calculations.js`, las validaciones, la persistencia y las tareas ya cerradas. También limita los archivos que se pueden tocar. `tasks.md` trae la plantilla de ese prompt y cinco pruebas de regresión (R1–R5), así que después de cada ajuste se comprueba en minutos que la persistencia, el rechazo de negativos y el cálculo diario siguen dando los mismos valores ($70.00 / $44.50 / 64 %). La diferencia principal es pasar de "confiar y luego revisar todo" a "acotar el cambio y verificar lo crítico". Los diffs son más pequeños y fáciles de auditar.
+
+**4. Evaluación de Satisfacción — Guion de la presentación de 1 minuto al profesor**
+
+1. *(10 s) Estructura:* "El repositorio sigue la estructura optimizada para IA. `CLAUDE.md` tiene la memoria semántica (Trip, GlobalBudget, DailyFoodLimit, Expense e invariantes). En `docs/` están los requerimientos EARS, el contrato JSON, el wireframe y el diseño. `tasks.md` es el plan por fases, `src/` tiene el código y `retrospective.md` las reflexiones."
+2. *(15 s) Persistencia:* registro un gasto y presiono **F5**: los datos y los totales siguen ahí.
+3. *(15 s) Restricción semántica:* escribo **−5** en el monto: se rechaza en vivo, Guardar queda deshabilitado y no se guarda nada.
+4. *(15 s) Lógica dinámica:* en Comida del Día 2 (límite $70.00, acumulado $44.50) agrego $10.00 y luego $5.00 y $20.00. El disponible baja a $15.50, $10.50 y −$9.50, y el estado pasa de Verde a Ámbar a Rojo sin bloquear el registro.
+5. *(5 s) Cierre:* "Cada regla está trazada de REQ a función y tarea en `design.md` y `tasks.md`."
+
+## 5. Lecciones del proceso de corrección
 
 - **Consistencia entre artefactos:** la mayoría de las correcciones (4, 5, 12) no eran errores de lógica sino de *desalineación* entre minuta, wireframe y schema. Mantener una sola fuente de verdad por concepto (categorías en `data-contract.json`, RNs y arquitectura en `docs/design.md`, nombres en `CLAUDE.md`) previene esta clase de defectos.
 - **Los requisitos del curso mandan sobre el diseño inicial:** campos que parecían razonables (`currency`, `coverEmoji`, módulo de Equipaje) se eliminaron porque ningún requerimiento ni regla de negocio los respaldaba. Lo que no está especificado, no existe.

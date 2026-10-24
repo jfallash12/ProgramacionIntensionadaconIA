@@ -16,7 +16,9 @@ Proyecto del curso **Programación Intencional con IA Generativa** — José Fal
 │   ├── wireframe.excalidraw # Wireframe editable (abrir en excalidraw.com)
 │   ├── wireframe.png        # Wireframe exportado (visible en GitHub)
 │   └── design.md            # ENTREGABLE PRINCIPAL: diseño y arquitectura (RN-01..RN-07)
-├── retrospective.md         # Historial de correcciones y reflexión sobre especificación intencional
+├── tasks.md                 # Plan de implementación por fases, validado con IA (S3L2)
+├── src/                     # Código fuente de la aplicación (en construcción según tasks.md)
+├── retrospective.md         # Historial de correcciones y reflexiones (S2L2, S3L1, S3L2)
 └── README.md                # Este archivo
 ```
 
@@ -29,11 +31,12 @@ Proyecto del curso **Programación Intencional con IA Generativa** — José Fal
 | 3 | [`docs/data-contract.json`](docs/data-contract.json) | S1L2 / S2L2 | Forma exacta de los datos |
 | 4 | [`CLAUDE.md`](CLAUDE.md) | S3L1 | Memoria semántica para la IA |
 | 5 | [`docs/design.md`](docs/design.md) | S3L1 | Cómo se construye: componentes, módulos, estado, diagramas y mapeo REQ → función |
-| 6 | [`retrospective.md`](retrospective.md) | todos | Correcciones y reflexiones |
+| 6 | [`tasks.md`](tasks.md) | S3L2 | Plan paso a paso: fases, criterios de aceptación, pruebas de regresión y matriz REQ → tarea |
+| 7 | [`retrospective.md`](retrospective.md) | todos | Correcciones y reflexiones |
 
 ## Cómo ejecutarla
 
-Sin dependencias, sin build, sin servidor *(la implementación empieza en la Semana 4 siguiendo `docs/design.md` §9)*:
+Sin dependencias, sin build, sin servidor *(la implementación se hace tarea por tarea siguiendo [`tasks.md`](tasks.md))*:
 
 1. Clonar el repositorio.
 2. Abrir `src/index.html` con doble clic en cualquier navegador moderno.

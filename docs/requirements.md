@@ -39,7 +39,7 @@
 
 * **REQ-008**: WHEN el usuario edita el nombre o las fechas de un viaje ya creado, IF el viaje tiene al menos una actividad asociada en el itinerario o al menos un gasto registrado, THEN the system SHALL solicitar confirmación explícita antes de aplicar el cambio y SHALL NOT modificar el viaje hasta que el usuario confirme.
 
-* **REQ-009**: WHEN el usuario edita las fechas de un viaje ya creado, IF el cambio de fechas deja fuera del nuevo rango a actividades o gastos variables existentes, THEN the system SHALL mostrar una advertencia listando los elementos afectados sin eliminar ninguno de forma automática. Los gastos fijos no se consideran afectados (REQ-047).
+* **REQ-009**: WHEN el usuario edita las fechas de un viaje ya creado, IF el cambio de fechas deja fuera del nuevo rango a actividades o gastos variables existentes, THEN the system SHALL mostrar una advertencia listando los elementos afectados sin eliminar ninguno de forma automática. Los gastos fijos no se consideran afectados (REQ-047). Esos elementos se pueden eliminar, pero para modificarlos primero hay que moverlos a una fecha dentro del viaje (REQ-027, REQ-031).
 
 * **REQ-062**: the system SHALL mantener como máximo **un (1) viaje**. WHEN el usuario intenta crear un viaje, IF ya existe un viaje, THEN the system SHALL rechazar la creación e indicar que primero debe eliminar el viaje actual (REQ-063).
 
@@ -119,7 +119,7 @@
 
 * **REQ-026**: WHEN el usuario registra o edita un gasto, IF la descripción del gasto está vacía (o contiene solo espacios), THEN the system SHALL rechazar la transacción y mostrar un mensaje de error en vivo.
 
-* **REQ-027**: WHEN el usuario registra o edita un gasto variable, IF la fecha del gasto está fuera del rango de fechas del viaje, THEN the system SHALL rechazar la transacción y mostrar un mensaje de error en vivo indicando el rango válido. (Los gastos fijos están exentos: REQ-047.)
+* **REQ-027**: WHEN el usuario registra o edita un gasto variable, IF la fecha del gasto está fuera del rango de fechas del viaje, THEN the system SHALL rechazar la transacción y mostrar un mensaje de error en vivo indicando el rango válido. Esto aplica también al editar un gasto que quedó fuera del rango tras cambiar las fechas del viaje (REQ-009): no se guarda ningún cambio hasta que su fecha esté dentro del viaje. (Los gastos fijos están exentos: REQ-047.)
 
 * **REQ-028**: WHEN el usuario registra o edita un gasto, IF el monto ingresado no es un número válido (contiene texto o caracteres no numéricos), THEN the system SHALL rechazar la transacción y mostrar un mensaje de error en vivo.
 
@@ -133,7 +133,7 @@
 
 * **REQ-030**: WHEN el usuario crea o edita un viaje, THEN the system SHALL validar que las fechas tengan un formato válido (ISO `YYYY-MM-DD`) antes de aceptarlas.
 
-* **REQ-031**: WHEN el usuario crea o edita una actividad del itinerario, IF el nombre de la actividad está vacío (o contiene solo espacios), o la fecha está fuera del rango del viaje, THEN the system SHALL rechazar la operación y mostrar un mensaje de error en vivo.
+* **REQ-031**: WHEN el usuario crea o edita una actividad del itinerario, IF el nombre de la actividad está vacío (o contiene solo espacios), o la fecha está fuera del rango del viaje, THEN the system SHALL rechazar la operación y mostrar un mensaje de error en vivo. Esto aplica a cualquier modificación (incluido el cambio de estado) de una actividad que quedó fuera del rango tras cambiar las fechas del viaje (REQ-009): primero debe moverse a una fecha dentro del viaje.
 
 * **REQ-032**: WHEN el usuario edita las fechas de un viaje ya creado o modifica el monto asignado de cualquier categoría, THEN the system SHALL recalcular de manera automática e inmediata `totalDays`, los límites diarios de comida y transporte, los disponibles del día y los totales de las categorías afectadas.
 

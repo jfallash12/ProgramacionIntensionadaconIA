@@ -324,11 +324,11 @@ Columnas: **UI** = componente de §4 · **Lógica** = función o reducer de §5.
 | 024 | *Eliminado* | — | — |
 | 025 | Monto ≤ 0 / fecha inválida | `ExpenseForm` | `validate.validateExpense`, `calc.isValidISODate` |
 | 026 | Descripción vacía | `ExpenseForm` | `validate.validateExpense` |
-| 027 | Gasto variable fuera de rango | `ExpenseForm` | `validate.validateExpense` |
+| 027 | Gasto variable fuera de rango (también al editar uno que quedó fuera) | `ExpenseForm` | `validate.validateExpense` |
 | 028 | Monto no numérico | `ExpenseForm` | `validate.validateExpense` |
 | 029 | `mealType` obligatorio en comida | `ExpenseForm`, `QuickMealButtons` | `validate.validateExpense` |
 | 030 | Fechas del viaje en ISO | `TripForm` | `validate.validateTrip` |
-| 031 | Actividad sin título o fuera de rango | `ActivityForm` | `validate.validateActivity` |
+| 031 | Actividad sin título o fuera de rango (también al editar o cambiar estado de una que quedó fuera) | `ActivityForm`, `ItineraryItem` | `validate.validateActivity` |
 | 032 | Recalcular al cambiar fechas o asignados | todas las vistas | `dispatch` → render (los derivados nunca se guardan) |
 | 033 | Eliminar gasto con confirmación y recalcular | `ExpenseRow` 🗑 → `ConfirmDialog` | `reducers.DELETE_EXPENSE` |
 | 034 | No generar itinerarios | `ItineraryList` (solo `ActivityForm`) | no existe ninguna función generadora |
@@ -374,6 +374,8 @@ Columnas: **UI** = componente de §4 · **Lógica** = función o reducer de §5.
 
 ## 9. Plan de implementación (Semana 4)
 
+> Resumen. El plan detallado y verificable, con 32 tareas, criterios de aceptación, dataset oficial y pruebas de regresión, está en [`../tasks.md`](../tasks.md).
+
 | Paso | Entregable | REQ que cierra | Verificación manual |
 |---|---|---|---|
 | 1 | `index.html` + CSP + `styles.css` base + carga de scripts | 038 | La consola no muestra errores; DevTools → Network vacío |
@@ -415,6 +417,7 @@ GitHub Pages solo **sirve** los archivos estáticos. Los datos siguen en el `loc
 | C4 | Gastos fijos | Exentos del rango de fechas | 047 |
 | C5 | Conversión | Solo actividades completadas | 043, 046, 061 |
 | C6 | Viajes / cierre del día | Un solo viaje; Total del Día | 053, 062 |
+| C7 | Elementos fuera de rango tras cambiar fechas | Se pueden eliminar; para editarlos primero hay que moverlos dentro del viaje | 009, 027, 031 |
 
 ### A.3. Modelo de datos (resumen del contrato)
 

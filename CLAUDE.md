@@ -23,6 +23,7 @@ controla un presupuesto por categorías personalizables, con **límites diarios 
 | [`docs/design.md`](docs/design.md) | Reglas de negocio RN-01..RN-07, clarificaciones C1–C6, entrevista Q1–Q6, arquitectura |
 | [`docs/data-contract.json`](docs/data-contract.json) | JSON Schema 2020-12 del estado `TravelAssistantState` (schemaVersion 2) — contrato estricto |
 | [`docs/wireframe.md`](docs/wireframe.md) | Diseño de interfaz por componentes (+ `wireframe.excalidraw` editable y `wireframe.png`) |
+| [`tasks.md`](tasks.md) | Plan de implementación por fases (T-00..T-32) con criterios de aceptación y pruebas de regresión |
 | [`retrospective.md`](retrospective.md) | Historial de correcciones y reflexiones |
 
 Si algún artefacto contradice otro, mandan los requerimientos (REQ) y luego las reglas (RN).
@@ -75,6 +76,12 @@ Detalle y trazabilidad a REQ en [`docs/design.md`](docs/design.md) §3.
 
 ## 5. Invariantes (comportamiento que NUNCA debe cambiar)
 
+**Invariantes del negocio (no negociables):**
+
+- **Cálculo dinámico de comida:** `Disponible Hoy = (Total Comida / Días Totales) − Acumulado del Día` (REQ-019, REQ-020). Lo mismo aplica a transporte.
+- **Persistencia obligatoria en LocalStorage:** el estado completo se guarda en cada mutación y se restaura al iniciar (REQ-039, REQ-040).
+- **Prohibición de montos negativos:** se rechazan montos ≤ 0, no numéricos o con más de 2 decimales, y campos obligatorios vacíos (REQ-025..REQ-028, REQ-065).
+
 Estos son los `SHALL NOT` del sistema — no los toques sin cambiar primero `docs/requirements.md`:
 
 1. **Nunca** se generan ni sugieren itinerarios automáticamente (REQ-034); toda actividad la ingresa el usuario (REQ-035).
@@ -115,11 +122,21 @@ Estos son los `SHALL NOT` del sistema — no los toques sin cambiar primero `doc
 │   ├── wireframe.excalidraw       ← versión editable (excalidraw.com)
 │   ├── wireframe.png              ← exportación visible en GitHub
 │   └── design.md                  ← ENTREGABLE PRINCIPAL: diseño y arquitectura
+├── tasks.md                       ← plan de implementación por fases (S3L2)
+├── src/                           ← código fuente (se construye siguiendo tasks.md)
 ├── retrospective.md               ← historial de correcciones y reflexión
 └── README.md                      ← resumen y comandos de ejecución
 ```
 
-## 8. Notas de entorno (máquina del estudiante)
+## 8. Flujo de trabajo con la IA (tasks.md + Unchanged Behavior)
+
+1. Ejecutar **una tarea de [`tasks.md`](tasks.md) a la vez**, en orden, tocando solo los archivos que la tarea lista.
+2. Al terminar, mostrar el diff y cómo verificar su criterio de aceptación.
+3. **Unchanged Behavior:** ningún cambio puede alterar el comportamiento de una tarea ya marcada `[x]`, ni los cálculos, validaciones o la persistencia. Si un ajuste lo requiere, detenerse y avisar.
+4. Después de cada tarea deben seguir pasando las pruebas de regresión R1–R5 de `tasks.md`.
+5. Si una tarea revela una contradicción en los documentos, no decidir: reportarla para actualizar primero `requirements.md` / `design.md`.
+
+## 9. Notas de entorno (máquina del estudiante)
 
 - **No hay Python ni Node.js** instalados; todo debe funcionar abriendo el HTML directamente en el navegador (file://) — coherente con REQ-038.
 - Git CLI no está en el PATH de PowerShell: usar `"C:\Program Files\Git\cmd\git.exe"`.
