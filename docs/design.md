@@ -374,9 +374,33 @@ Columnas: **UI** = componente de §4 · **Lógica** = función o reducer de §5.
 
 ## 8. Diseño visual (CSS)
 
-- Variables en `:root`: `--ok` (verde), `--warning` (ámbar), `--exceeded` (rojo), `--fixed` (violeta) y `--muted`.
-- La clase de estado (`is-ok`, `is-warning`, `is-exceeded`) se aplica a la tarjeta y a la barra. El color **siempre** va con texto ("En orden", "Precaución", "Excedido"), no solo con color.
-- Layout: Dashboard → Control Diario → Detalle Operativo (dos columnas en escritorio; una columna con `@media (max-width: 720px)`).
+**Tema "Noche aventurera"** (oscuro, `color-scheme: dark`):
+
+- **Paleta en `:root`:** fondo azul medianoche (`--bg-0`, `--bg-1`) con resplandores radiales, acentos neón `--violet` y `--cyan` (degradado `--grad-main`), y estados `--ok` (verde menta), `--warning` (ámbar), `--exceeded` (rosa-rojo) y `--fixed` (lavanda).
+- **Tarjetas de vidrio esmerilado:** fondo translúcido, `backdrop-filter: blur` y borde que brilla al pasar el mouse.
+- **Estados:** la clase `is-ok` / `is-warning` / `is-exceeded` define `--state` para tarjetas, barras, estadísticas y puntos. El color **siempre** va con texto ("En orden", "Precaución", "Excedido").
+
+**Efectos (intensos, solo CSS más un mínimo de JS en `ui.js`):**
+
+- Cielo estrellado que se desplaza lentamente.
+- Logo 🎒 flotante.
+- Título "Mochila" y borde del encabezado del viaje con degradado animado.
+- Botón principal con destello.
+- Elevación y brillo al pasar el mouse en tarjetas, botones, días y actividades.
+- Barras con brillo continuo, que se llenan animadas al entrar a una vista.
+- Tarjeta diaria excedida y alerta de sobregiro que pulsan en rojo.
+- Campos con error que tiemblan.
+- Avisos que se deslizan y diálogos que aparecen con escala.
+- **Confeti** al registrar un gasto que deja el día dentro del límite. Nunca si queda excedido, para no premiar el sobregiro.
+
+**Reglas de los efectos:**
+
+- *Solo se animan elementos nuevos:* `ui.js` recuerda la última vista, el último aviso, el último diálogo y la última celebración, así que una acción cualquiera no repite las animaciones de entrada.
+- *Decorativos y sin impacto en la lógica:* el confeti no recibe clics (`pointer-events: none`), tiene `aria-hidden` y no forma parte del estado persistido.
+- *Accesibilidad:* con `prefers-reduced-motion: reduce` se desactivan todas las animaciones y el confeti. Los textos claros sobre el fondo oscuro mantienen buen contraste.
+- *CSP y offline:* sin fuentes ni recursos externos (fuente del sistema). Los estilos dinámicos usan CSSOM (`element.style`), que la CSP permite.
+
+**Layout:** Dashboard → Control Diario → Detalle Operativo (dos columnas en escritorio; una columna con `@media (max-width: 720px)`).
 
 ## 9. Plan de implementación (Semana 4)
 

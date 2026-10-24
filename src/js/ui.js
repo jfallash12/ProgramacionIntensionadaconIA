@@ -27,6 +27,9 @@
   ];
 
   var S, U, H; // state, ui y helpers del render en curso
+  // Efectos visuales: solo se animan los elementos NUEVOS (no en cada re-render).
+  var lastViewKey = null, lastNotice = null, lastDialog = null, lastCelebrate = null;
+  var CONFETTI_COLORS = ['#a855f7', '#22d3ee', '#f472b6', '#fbbf24', '#34d399'];
 
   /* ====================================================================== */
   /* Helper el(): crea elementos de forma segura                             */
@@ -40,7 +43,9 @@
       if (v === undefined || v === null || v === false) { return; }
       if (k === 'class') { node.className = v; }
       else if (k === 'text') { node.textContent = v; }
-      else if (k === 'style') { Object.keys(v).forEach(function (p) { node.style[p] = v[p]; }); }
+      else if (k === 'style') { // CSSOM (permitido por la CSP); las variables CSS usan setProperty
+        Object.keys(v).forEach(function (p) { if (p.indexOf('--') === 0) { node.style.setProperty(p, v[p]); } else { node.style[p] = v[p]; } });
+      }
       else if (k === 'value') { node.value = v; }
       else if (k === 'checked') { node.checked = true; }
       else if (k === 'disabled') { node.disabled = true; }
@@ -164,7 +169,8 @@
 
   function StorageNotice() { // REQ-041, REQ-064 y avisos generales
     if (!U.notice) { return null; }
-    return el('div', { class: 'notice is-' + U.notice.type, role: U.notice.type === 'ok' ? 'status' : 'alert' },
+    var isNew = U.notice !== lastNotice;
+    return el('div', { class: 'notice is-' + U.notice.type + (isNew ? ' is-new' : ''), role: U.notice.type === 'ok' ? 'status' : 'alert' },
       el('span', null, U.notice.text),
       button('Cerrar', 'DISMISS_NOTICE', { class: 'ghost small', 'aria-label': 'Cerrar aviso' }));
   }
@@ -314,7 +320,7 @@
       el('h4', null, 'Registro rápido de comida (acumulado de hoy por tipo)'),
       el('div', { class: 'quick-row' }, calc.MEAL_TYPES.map(function (m) {
         return el('button', { type: 'button', class: 'btn quick', 'data-action': 'PREFILL_MEAL', 'data-meal': m },
-          MEAL_ICONS[m] + ' ' + MEAL_LABELS[m] + ': ' + money(totals[m]));
+          el('span', { class: 'emoji', 'aria-hidden': 'true' }, MEAL_ICONS[m]), ' ' + MEAL_LABELS[m] + ': ' + money(totals[m]));
       })));
   }
 
@@ -502,7 +508,7 @@
   function cancelButton() { return button('Cancelar', 'CLOSE_DIALOG', { class: 'ghost' }); }
 
   function dialogShell(title, body) {
-    return el('div', { class: 'backdrop' },
+    return el('div', { class: 'backdrop' + (U.dialog !== lastDialog ? ' is-new' : '') },
       el('div', { class: 'dialog', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'dialog-title' },
         el('h3', { id: 'dialog-title' }, title), body));
   }
@@ -579,15 +585,40 @@
 
   function render(root, state, uiState, helpers) {
     S = state; U = uiState; H = helpers;
+    var viewKey = S.trip ? U.activeTab : 'empty';
+    var mainClass = viewKey !== lastViewKey ? 'animate-in' : null; // entrada animada solo al cambiar de vista
     var content = el('div', { class: 'layout' },
       el('header', { class: 'app-header' },
+        el('span', { class: 'logo', 'aria-hidden': 'true' }, '🎒'),
         el('h1', null, 'Mochila'),
-        el('span', { class: 'muted' }, 'Asistente de viaje y presupuesto · 100 % offline')),
+        el('span', { class: 'tagline' }, 'Asistente de viaje y presupuesto · 100 % offline')),
       StorageNotice(),
-      S.trip ? [TripHeader(), NavTabs(), el('main', null, View())] : el('main', null, EmptyTripState()),
-      Dialogs());
+      S.trip ? [TripHeader(), NavTabs(), el('main', { class: mainClass }, View())] : el('main', { class: mainClass }, EmptyTripState()),
+      Dialogs(),
+      Confetti());
     root.replaceChildren(content);
     doc.body.classList.toggle('has-dialog', !!U.dialog);
+    lastViewKey = viewKey;
+    lastNotice = U.notice;
+    lastDialog = U.dialog;
+    lastCelebrate = U.celebrate || lastCelebrate;
+  }
+
+  /** Confeti decorativo al registrar un gasto dentro del límite (no recibe clics). */
+  function Confetti() {
+    if (!U.celebrate || U.celebrate === lastCelebrate) { return null; }
+    var pieces = [];
+    for (var i = 0; i < 48; i++) {
+      pieces.push(el('span', {
+        style: {
+          left: (Math.random() * 100).toFixed(2) + '%',
+          background: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+          animationDelay: (Math.random() * 0.35).toFixed(2) + 's',
+          '--drift': Math.round(Math.random() * 160 - 80) + 'px'
+        }
+      }));
+    }
+    return el('div', { class: 'confetti', 'aria-hidden': 'true' }, pieces);
   }
 
   /** Lleva el foco al primer campo del diálogo abierto (accesibilidad). */

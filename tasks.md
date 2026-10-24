@@ -399,6 +399,19 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
   - Responder en `retrospective.md` las preguntas del S3L2 con la experiencia de la implementación.
   - Verificar la estructura del repo pedida por el lab.
 
+## Fase 13 — Rediseño visual (solicitud del cliente, bajo Unchanged Behavior)
+
+- [x] **T-33 Tema "Noche aventurera" con efectos intensos**
+  - **Archivos:** `src/css/styles.css` (reescrito); `src/js/ui.js` (logo, animaciones solo para elementos nuevos, confeti); `src/js/app.js` (solo la señal `ui.celebrate` en `ADD_EXPENSE.after`).
+  - **Diseño:** `design.md` §8.
+  - **Unchanged Behavior:** no se tocaron `calculations.js`, `validations.js`, `storage.js` ni los reducers; los textos de estado siguen acompañando a los colores.
+  - **Aceptación:**
+    - Las 126 verificaciones automatizadas siguen pasando y la consola no muestra errores.
+    - Hay confeti al registrar un gasto dentro del límite, y no lo hay si el día queda excedido.
+    - La tarjeta excedida pulsa en rojo.
+    - La vista móvil no tiene scroll horizontal.
+    - Con `prefers-reduced-motion` no hay animaciones.
+
 ---
 
 ## Registro de ejecución
@@ -411,6 +424,7 @@ Objetivo: eliminar contradicciones **antes** de escribir código.
 | 4 | T-11 | `feat(T-11)` | `src/js/storage.js` |
 | 5–11 | T-12..T-30 | `feat(T-12..T-30)` | `src/js/app.js`, `src/js/ui.js` (dependen entre sí: se integraron juntos) |
 | 12 | T-31, T-32 | `docs(T-31,T-32)` | documentación, `REFLECTION.md` |
+| 13 | T-33 | `style(T-33)` | `src/css/styles.css`, `src/js/ui.js`, `src/js/app.js` |
 
 **Evidencia de verificación** (navegador Chromium automatizado abriendo `src/index.html` con `file://`, con el dataset oficial):
 

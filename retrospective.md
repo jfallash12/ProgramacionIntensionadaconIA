@@ -46,6 +46,7 @@
 | 31 | Corrección del borrador de actividad desactualizado tras acortar el viaje y regla D14 de visibilidad de errores | Hallazgo durante la verificación, corregido con Unchanged Behavior |
 | 32 | REQ-063 aclarado (se conservan todas las categorías) y `CLAUDE.md` §10 con las reglas de gobierno de la IA | Proyecto Final: archivo de reglas que restringe el stack y prohíbe parches fuera de la especificación |
 | 33 | Nombre de la app: **Mochila** (antes "Viajero" / "NomadPulse Travel Assistant") en interfaz, código (`window.Mochila`, clave `mochila.state`) y documentos | Decisión del estudiante; las 126 verificaciones se repitieron sin cambios en el comportamiento |
+| 34 | Rediseño visual "Noche aventurera" (tema oscuro neón, vidrio esmerilado, animaciones y confeti) — T-33 | Solicitud del cliente; hecho bajo Unchanged Behavior sin tocar la lógica (126 verificaciones intactas) |
 
 ## 2. Reflexión sobre la Especificación Intencional
 

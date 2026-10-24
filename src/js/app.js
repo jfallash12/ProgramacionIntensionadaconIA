@@ -334,6 +334,10 @@
         s.expenses.push(buildExpense(a.draft, { id: newId('exp'), createdAt: Date.now() }));
       },
       after: function (a) {
+        // Efecto visual: confeti si el gasto deja el día dentro del límite (nunca si queda excedido).
+        if (a.draft.isFixed !== true && calc.dailyStatus(state, a.draft.categoryId, a.draft.date) !== 'exceeded') {
+          ui.celebrate = { at: Date.now() };
+        }
         resetForm('expense', { date: a.draft.date, categoryId: a.draft.categoryId, mealType: a.draft.mealType });
         ui.focus = { form: 'expense', name: 'amount' };
         setNotice('ok', 'Gasto registrado: ' + calc.formatMoney(validate.parseAmount(a.draft.amount).value) + ' — ' + trimOr(a.draft.description) + '.');
