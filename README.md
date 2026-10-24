@@ -1,6 +1,6 @@
 # NomadPulse Travel Assistant ("Viajero")
 
-Asistente personal de viaje con control de presupuesto por categorías, alertas visuales de límite diario de comida, itinerario y conversión de actividades a gastos. **100% offline**: los datos viven en el `localStorage` del navegador, sin servidores ni conexión a internet.
+Asistente personal de viaje con presupuesto por categorías personalizables, límites diarios de **comida y transporte** con alertas visuales, Total del Día, itinerario y conversión de actividades a gastos. **100% offline**: los datos viven en el `localStorage` del navegador, sin servidores ni conexión a internet.
 
 Proyecto del curso **Programación Intencional con IA Generativa** — José Fallas (jfallash@ucenfotec.ac.cr).
 
@@ -8,27 +8,42 @@ Proyecto del curso **Programación Intencional con IA Generativa** — José Fal
 
 ```text
 /
-├── CLAUDE.md              # Memoria semántica: reglas de negocio, lenguaje ubicuo e invariantes
+├── CLAUDE.md                # Memoria semántica: reglas de negocio, lenguaje ubicuo e invariantes
 ├── docs/
-│   ├── requirements.md    # Especificación formal — 46 requerimientos en sintaxis EARS (REQ-001..REQ-046)
-│   ├── data-contract.json # Contrato de datos: JSON Schema 2020-12 (TravelAssistantState)
-│   ├── wireframe.md       # Boceto de interfaz por componentes (+ .excalidraw editable)
-│   └── design.md          # ENTREGABLE PRINCIPAL: diseño y arquitectura (reglas RN-01..RN-05)
-├── retrospective.md       # Historial de correcciones y reflexión sobre especificación intencional
-└── README.md              # Este archivo
+│   ├── requirements.md      # Especificación EARS v2 — 63 requerimientos vigentes (REQ-001..REQ-065)
+│   ├── data-contract.json   # Contrato de datos: JSON Schema 2020-12 (TravelAssistantState, schemaVersion 2)
+│   ├── wireframe.md         # Boceto de interfaz por componentes
+│   ├── wireframe.excalidraw # Wireframe editable (abrir en excalidraw.com)
+│   ├── wireframe.png        # Wireframe exportado (visible en GitHub)
+│   └── design.md            # ENTREGABLE PRINCIPAL: diseño y arquitectura (RN-01..RN-07)
+├── retrospective.md         # Historial de correcciones y reflexión sobre especificación intencional
+└── README.md                # Este archivo
 ```
+
+## Documentación (flujo Spec Driven Development)
+
+| Orden | Documento | Lab | Para qué sirve |
+|---|---|---|---|
+| 1 | [`docs/wireframe.md`](docs/wireframe.md) + [`wireframe.png`](docs/wireframe.png) | S1L2 | Qué ve el usuario |
+| 2 | [`docs/requirements.md`](docs/requirements.md) | S2L2 | Qué debe hacer el sistema (EARS) |
+| 3 | [`docs/data-contract.json`](docs/data-contract.json) | S1L2 / S2L2 | Forma exacta de los datos |
+| 4 | [`CLAUDE.md`](CLAUDE.md) | S3L1 | Memoria semántica para la IA |
+| 5 | [`docs/design.md`](docs/design.md) | S3L1 | Cómo se construye: componentes, módulos, estado, diagramas y mapeo REQ → función |
+| 6 | [`retrospective.md`](retrospective.md) | todos | Correcciones y reflexiones |
 
 ## Cómo ejecutarla
 
-Sin dependencias, sin build, sin servidor:
+Sin dependencias, sin build, sin servidor *(la implementación empieza en la Semana 4 siguiendo `docs/design.md` §9)*:
 
 1. Clonar el repositorio.
-2. Abrir `src/index.html` en cualquier navegador moderno *(la implementación aún no ha comenzado; el código fuente se construirá módulo por módulo)*.
+2. Abrir `src/index.html` con doble clic en cualquier navegador moderno.
+
+Publicación en línea: GitHub Pages (ver `docs/design.md` §10).
 
 ## Stack
 
 - **HTML + CSS puro** (escrito a mano — sin frameworks, librerías ni CDN).
-- **JavaScript vanilla modular** (`js/app.js`, `js/storage.js`, `js/validations.js`, `js/calculations.js`, `js/ui.js`).
+- **JavaScript vanilla** en scripts clásicos (`src/js/calculations.js`, `validations.js`, `storage.js`, `ui.js`, `app.js`) bajo el espacio de nombres `window.Viajero`.
 - **Persistencia** en `localStorage` con restauración automática al iniciar y manejo de estado corrupto.
 
 ## Requerimientos
@@ -37,20 +52,21 @@ La especificación completa está en [`docs/requirements.md`](docs/requirements.
 
 | Categoría | Requerimientos |
 |-----------|----------------|
-| Gestión de viajes y presupuesto global | REQ-001 – REQ-009 |
-| Gastos fijos previos (pre-pagos) | REQ-010 – REQ-014 |
-| Gestión de categorías | REQ-015 – REQ-018 |
-| Presupuestos y comida (límite diario y alertas) | REQ-019 – REQ-024 |
-| Validaciones de borde y transacciones | REQ-025 – REQ-033 |
-| Restricciones del cliente (comportamiento que no cambia) | REQ-034 – REQ-038 |
-| Persistencia local | REQ-039 – REQ-041 |
-| Diseño e integración (conversión actividad → gasto) | REQ-042 – REQ-046 |
+| Gestión de viajes y presupuesto global | REQ-001 – REQ-009 (REQ-007 eliminado), REQ-062, REQ-063 |
+| Gastos fijos previos (pre-pagos) | REQ-010 – REQ-014, REQ-047 |
+| Gestión de categorías | REQ-015 – REQ-018, REQ-048, REQ-049 |
+| Presupuestos diarios (comida y transporte) | REQ-019 – REQ-023 (REQ-024 eliminado), REQ-050 – REQ-054 |
+| Validaciones de borde y transacciones | REQ-025 – REQ-033, REQ-055 – REQ-059, REQ-065 |
+| Restricciones del cliente (comportamiento que no cambia) | REQ-034 – REQ-038, REQ-060 |
+| Persistencia local | REQ-039 – REQ-041, REQ-064 |
+| Diseño e integración (conversión actividad → gasto) | REQ-042 – REQ-046, REQ-061 |
 
 ## Reglas de negocio clave
 
 - `totalDays = (endDate − startDate) + 1` — cálculo inclusivo de días (RN-01).
-- `foodDailyLimit = foodTotal / totalDays` — la comida se distribuye uniformemente por día (RN-02).
-- `Disponible(día) = foodDailyLimit − acumulado del día`; estados Verde ≤80%, Ámbar ≤100%, Rojo >100% (RN-03, RN-04). **La alerta nunca bloquea registrar un gasto.**
-- Montos > 0, fechas ISO `YYYY-MM-DD`, categoría obligatoria y `mealType` obligatorio si la categoría es `comida` (RN-05).
+- `dailyLimit = allocated / totalDays` para comida y transporte (RN-02).
+- `Disponible Hoy = dailyLimit − acumulado del día`; estados Verde ≤80%, Ámbar ≤100%, Rojo >100% (RN-03, RN-04). **La alerta nunca bloquea registrar un gasto.**
+- Montos > 0, fechas ISO `YYYY-MM-DD`, categoría obligatoria, `mealType` si y solo si la categoría es comida; los gastos fijos pueden ser anteriores al viaje (RN-05).
+- `Presupuesto Total = Σ asignados por categoría` (RN-06) · `Total del Día = Σ gastos variables del día` (RN-07).
 
 Detalles y trazabilidad en [`docs/design.md`](docs/design.md).

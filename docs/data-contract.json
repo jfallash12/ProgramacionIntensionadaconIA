@@ -1,104 +1,545 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jfallash12/ProgramacionIntensionadaconIA/docs/data-contract.json",
   "title": "TravelAssistantState",
-  "description": "Modelo de datos del estado completo de la aplicación Viajero. Todo este objeto se persiste en LocalStorage y se restaura al iniciar la aplicación.",
-  "$comment": "Campos derivados (totalDays, foodDailyLimit) NO se persisten: se recalculan en tiempo de ejecución a partir de trip.startDate, trip.endDate y budgets.",
+  "description": "Estado completo de la aplicación Viajero (NomadPulse). Todo este objeto se persiste en LocalStorage (clave 'viajero.state') en cada mutación y se restaura al iniciar (REQ-039, REQ-040).",
+  "$comment": "Campos DERIVADOS, nunca persistidos (se recalculan en cada render/mutación): totalDays = (endDate - startDate) + 1 (inclusivo, RN-01); presupuestoTotal = Σ categories[].allocated (RN-06); dailyLimit(categoría diaria) = allocated / totalDays (RN-02); acumuladoDelDia, disponibleHoy, totalDelDia (RN-03, RN-07). Reglas que JSON Schema NO puede expresar y que valida validations.js: endDate >= startDate (REQ-003); fecha de gastos NO fijos dentro del rango del viaje (REQ-027); nombres de categoría únicos sin distinguir mayúsculas (REQ-018); categoryId, linkedActivityId y convertedExpenseId deben existir (integridad referencial); un enlace actividad<->gasto es bidireccional (REQ-044); los montos tienen máximo 2 decimales (REQ-065).",
   "type": "object",
-  "required": ["trip", "budgets", "expenses", "itinerary"],
-  "$defs": {
-    "categoria": {
-      "type": "string",
-      "enum": ["comida", "hospedaje", "transporte", "actividades", "compras", "imprevistos"]
-    },
-    "fechaISO": {
-      "type": "string",
-      "format": "date",
-      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
-    },
-    "montoPositivo": {
-      "type": "number",
-      "exclusiveMinimum": 0
-    }
-  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "trip",
+    "categories",
+    "expenses",
+    "itinerary"
+  ],
   "properties": {
-    "trip": {
-      "type": "object",
-      "required": ["id", "name", "destination", "startDate", "endDate"],
-      "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string", "minLength": 1 },
-        "destination": { "type": "string", "minLength": 1 },
-        "startDate": { "$ref": "#/$defs/fechaISO" },
-        "endDate": { "$ref": "#/$defs/fechaISO" }
-      }
+    "schemaVersion": {
+      "description": "Versión del contrato. Permite migrar estados viejos de LocalStorage. Un estado con otra versión o que no valide se trata como corrupto (REQ-041).",
+      "const": 2
     },
-    "budgets": {
+    "trip": {
+      "description": "Viaje activo. Máximo UN viaje en la aplicación (REQ-062). null = no hay viaje creado (estado vacío, REQ-041/REQ-042).",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/trip"
+        }
+      ]
+    },
+    "categories": {
+      "description": "Categorías personalizables (REQ-015..REQ-018, REQ-048, REQ-049). Siempre deben existir las dos categorías del sistema: comida y transporte.",
       "type": "array",
       "items": {
-        "type": "object",
-        "required": ["category", "allocated"],
-        "properties": {
-          "category": { "$ref": "#/$defs/categoria" },
-          "allocated": { "$ref": "#/$defs/montoPositivo" }
+        "$ref": "#/$defs/category"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "const": "cat-comida"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "const": "cat-transporte"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
         }
-      }
+      ]
     },
     "expenses": {
       "type": "array",
       "items": {
-        "type": "object",
-        "required": ["id", "category", "amount", "description", "date", "paymentMethod", "createdAt"],
-        "properties": {
-          "id": { "type": "string" },
-          "category": { "$ref": "#/$defs/categoria" },
-          "amount": { "$ref": "#/$defs/montoPositivo" },
-          "description": { "type": "string", "minLength": 1 },
-          "date": { "$ref": "#/$defs/fechaISO" },
-          "time": { "type": "string", "pattern": "^\\d{2}:\\d{2}$" },
-          "mealType": {
-            "type": "string",
-            "enum": ["desayuno", "almuerzo", "cena", "snack_cafe", "bebidas_bar"]
-          },
-          "paymentMethod": {
-            "type": "string",
-            "enum": ["tarjeta", "efectivo", "transferencia"]
-          },
-          "location": { "type": "string" },
-          "notes": { "type": "string" },
-          "createdAt": { "type": "number" }
-        },
-        "allOf": [
-          {
-            "if": {
-              "required": ["category"],
-              "properties": { "category": { "const": "comida" } }
-            },
-            "then": { "required": ["mealType"] }
-          }
-        ]
+        "$ref": "#/$defs/expense"
       }
     },
     "itinerary": {
       "type": "array",
       "items": {
-        "type": "object",
-        "required": ["id", "dayNumber", "date", "time", "title", "location", "category", "status"],
-        "properties": {
-          "id": { "type": "string" },
-          "dayNumber": { "type": "integer", "minimum": 1 },
-          "date": { "$ref": "#/$defs/fechaISO" },
-          "time": { "type": "string", "pattern": "^\\d{2}:\\d{2}$" },
-          "title": { "type": "string", "minLength": 1 },
-          "location": { "type": "string" },
-          "category": { "$ref": "#/$defs/categoria" },
-          "notes": { "type": "string" },
-          "estimatedCost": { "type": "number", "minimum": 0 },
-          "status": {
-            "type": "string",
-            "enum": ["pendiente", "en_progreso", "completado"]
-          }
-        }
+        "$ref": "#/$defs/activity"
       }
     }
-  }
+  },
+  "$defs": {
+    "fechaISO": {
+      "description": "Fecha ISO YYYY-MM-DD. El pattern rechaza formatos distintos; 'format: date' (con format-assertion) rechaza fechas imposibles como 2026-02-30.",
+      "type": "string",
+      "format": "date",
+      "pattern": "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$"
+    },
+    "hora": {
+      "description": "Hora HH:MM en formato 24 h (00:00 a 23:59).",
+      "type": "string",
+      "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+    },
+    "montoPositivo": {
+      "description": "Monto en la moneda del viaje. RN-05: mayor a cero; no se permiten cero, negativos ni NaN.",
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "textoNoVacio": {
+      "description": "Texto obligatorio: al menos un carácter que no sea espacio (REQ-002, REQ-018, REQ-026, REQ-031).",
+      "type": "string",
+      "pattern": "\\S"
+    },
+    "categoryId": {
+      "type": "string",
+      "pattern": "^cat-[a-z0-9-]+$"
+    },
+    "trip": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "destination",
+        "startDate",
+        "endDate"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^trip-[a-z0-9-]+$"
+        },
+        "name": {
+          "$ref": "#/$defs/textoNoVacio"
+        },
+        "destination": {
+          "$ref": "#/$defs/textoNoVacio"
+        },
+        "startDate": {
+          "$ref": "#/$defs/fechaISO"
+        },
+        "endDate": {
+          "$ref": "#/$defs/fechaISO"
+        }
+      }
+    },
+    "category": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "tracking",
+        "system"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/categoryId"
+        },
+        "name": {
+          "$ref": "#/$defs/textoNoVacio"
+        },
+        "allocated": {
+          "description": "Monto asignado. Opcional: una categoría sin 'allocated' se muestra como 'Sin presupuesto' (REQ-052). Si existe, debe ser > 0 (REQ-023).",
+          "$ref": "#/$defs/montoPositivo"
+        },
+        "tracking": {
+          "description": "'daily' = el asignado se divide entre los días del viaje (RN-02). 'total' = bolsa fija para todo el viaje.",
+          "enum": [
+            "daily",
+            "total"
+          ]
+        },
+        "system": {
+          "description": "true = categoría del sistema (comida, transporte): no se puede eliminar ni cambiar su tracking (REQ-048).",
+          "type": "boolean"
+        }
+      },
+      "allOf": [
+        {
+          "$comment": "Solo comida y transporte son diarias (REQ-049).",
+          "if": {
+            "properties": {
+              "tracking": {
+                "const": "daily"
+              }
+            },
+            "required": [
+              "tracking"
+            ]
+          },
+          "then": {
+            "properties": {
+              "id": {
+                "enum": [
+                  "cat-comida",
+                  "cat-transporte"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "$comment": "Comida y transporte son siempre categorías del sistema y diarias; las demás nunca son del sistema.",
+          "if": {
+            "properties": {
+              "id": {
+                "enum": [
+                  "cat-comida",
+                  "cat-transporte"
+                ]
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "system": {
+                "const": true
+              },
+              "tracking": {
+                "const": "daily"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "system": {
+                "const": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    "expense": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "categoryId",
+        "amount",
+        "description",
+        "date",
+        "isFixed",
+        "createdAt"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^exp-[a-z0-9-]+$"
+        },
+        "categoryId": {
+          "$ref": "#/$defs/categoryId"
+        },
+        "amount": {
+          "$ref": "#/$defs/montoPositivo"
+        },
+        "description": {
+          "$ref": "#/$defs/textoNoVacio"
+        },
+        "date": {
+          "description": "Fecha del gasto. Si isFixed = false debe estar dentro del rango del viaje (REQ-027). Si isFixed = true puede ser anterior al viaje (REQ-047).",
+          "$ref": "#/$defs/fechaISO"
+        },
+        "time": {
+          "$ref": "#/$defs/hora"
+        },
+        "mealType": {
+          "description": "Obligatorio si y solo si categoryId = cat-comida (REQ-029, REQ-056).",
+          "enum": [
+            "desayuno",
+            "almuerzo",
+            "cena",
+            "snack_cafe",
+            "bebidas_bar"
+          ]
+        },
+        "isFixed": {
+          "description": "true = gasto fijo previo / pre-pago (REQ-010). Cuenta en el Total Gastado global, pero NO en el acumulado diario ni en el Total del Día (REQ-011).",
+          "type": "boolean"
+        },
+        "linkedActivityId": {
+          "description": "Actividad del itinerario de la que proviene este gasto (REQ-044).",
+          "type": "string",
+          "pattern": "^act-[a-z0-9-]+$"
+        },
+        "createdAt": {
+          "description": "Marca de tiempo de creación en milisegundos desde epoch (Date.now()).",
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "categoryId": {
+                "const": "cat-comida"
+              }
+            },
+            "required": [
+              "categoryId"
+            ]
+          },
+          "then": {
+            "required": [
+              "mealType"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "mealType"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "activity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "date",
+        "time",
+        "title",
+        "categoryId",
+        "status"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^act-[a-z0-9-]+$"
+        },
+        "date": {
+          "$ref": "#/$defs/fechaISO"
+        },
+        "time": {
+          "$ref": "#/$defs/hora"
+        },
+        "title": {
+          "$ref": "#/$defs/textoNoVacio"
+        },
+        "location": {
+          "type": "string"
+        },
+        "categoryId": {
+          "$ref": "#/$defs/categoryId"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "estimatedCost": {
+          "description": "Costo estimado. Ausente o 0 = actividad sin costo: no se puede convertir en gasto (REQ-046).",
+          "type": "number",
+          "minimum": 0
+        },
+        "status": {
+          "enum": [
+            "pendiente",
+            "en_progreso",
+            "completado"
+          ]
+        },
+        "convertedExpenseId": {
+          "description": "Gasto creado al convertir esta actividad (REQ-044). Si existe, la actividad ya fue convertida y no puede convertirse otra vez (REQ-045).",
+          "type": "string",
+          "pattern": "^exp-[a-z0-9-]+$"
+        }
+      },
+      "allOf": [
+        {
+          "$comment": "Solo una actividad completada y con costo puede estar convertida (REQ-043, REQ-061).",
+          "if": {
+            "required": [
+              "convertedExpenseId"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "completado"
+              },
+              "estimatedCost": {
+                "exclusiveMinimum": 0
+              }
+            },
+            "required": [
+              "estimatedCost"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "examples": [
+    {
+      "schemaVersion": 2,
+      "trip": null,
+      "categories": [
+        {
+          "id": "cat-comida",
+          "name": "Comida",
+          "tracking": "daily",
+          "system": true
+        },
+        {
+          "id": "cat-transporte",
+          "name": "Transporte",
+          "tracking": "daily",
+          "system": true
+        }
+      ],
+      "expenses": [],
+      "itinerary": []
+    },
+    {
+      "schemaVersion": 2,
+      "trip": {
+        "id": "trip-001",
+        "name": "Vacaciones Arenal",
+        "destination": "Costa Rica (Arenal)",
+        "startDate": "2026-10-10",
+        "endDate": "2026-10-17"
+      },
+      "categories": [
+        {
+          "id": "cat-comida",
+          "name": "Comida",
+          "allocated": 560,
+          "tracking": "daily",
+          "system": true
+        },
+        {
+          "id": "cat-transporte",
+          "name": "Transporte",
+          "allocated": 380,
+          "tracking": "daily",
+          "system": true
+        },
+        {
+          "id": "cat-hospedaje",
+          "name": "Hospedaje",
+          "allocated": 850,
+          "tracking": "total",
+          "system": false
+        },
+        {
+          "id": "cat-actividades",
+          "name": "Actividades",
+          "allocated": 320,
+          "tracking": "total",
+          "system": false
+        },
+        {
+          "id": "cat-compras",
+          "name": "Compras",
+          "allocated": 260,
+          "tracking": "total",
+          "system": false
+        },
+        {
+          "id": "cat-imprevistos",
+          "name": "Imprevistos",
+          "tracking": "total",
+          "system": false
+        }
+      ],
+      "expenses": [
+        {
+          "id": "exp-001",
+          "categoryId": "cat-hospedaje",
+          "amount": 320,
+          "description": "Reserva hotel (pagada)",
+          "date": "2026-09-15",
+          "isFixed": true,
+          "createdAt": 1789430400000
+        },
+        {
+          "id": "exp-002",
+          "categoryId": "cat-comida",
+          "mealType": "desayuno",
+          "amount": 14,
+          "description": "Gallo pinto",
+          "date": "2026-10-11",
+          "time": "08:30",
+          "isFixed": false,
+          "createdAt": 1791714600000
+        },
+        {
+          "id": "exp-003",
+          "categoryId": "cat-comida",
+          "mealType": "snack_cafe",
+          "amount": 6.5,
+          "description": "Café",
+          "date": "2026-10-11",
+          "time": "11:15",
+          "isFixed": false,
+          "createdAt": 1791724500000
+        },
+        {
+          "id": "exp-004",
+          "categoryId": "cat-transporte",
+          "amount": 12,
+          "description": "Taxi a La Fortuna",
+          "date": "2026-10-11",
+          "time": "13:00",
+          "isFixed": false,
+          "createdAt": 1791730800000
+        },
+        {
+          "id": "exp-005",
+          "categoryId": "cat-comida",
+          "mealType": "almuerzo",
+          "amount": 24,
+          "description": "Casado",
+          "date": "2026-10-11",
+          "time": "14:00",
+          "isFixed": false,
+          "createdAt": 1791734400000
+        }
+      ],
+      "itinerary": [
+        {
+          "id": "act-001",
+          "date": "2026-10-11",
+          "time": "08:30",
+          "title": "Puentes Colgantes",
+          "categoryId": "cat-actividades",
+          "estimatedCost": 35,
+          "status": "completado"
+        },
+        {
+          "id": "act-002",
+          "date": "2026-10-11",
+          "time": "15:30",
+          "title": "Termales Tabacón",
+          "categoryId": "cat-actividades",
+          "estimatedCost": 52,
+          "status": "en_progreso"
+        },
+        {
+          "id": "act-003",
+          "date": "2026-10-11",
+          "time": "19:30",
+          "title": "Cena Mirador",
+          "categoryId": "cat-comida",
+          "status": "pendiente"
+        }
+      ]
+    }
+  ]
 }
